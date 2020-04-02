@@ -1,0 +1,2 @@
+# nscoincore
+Nscoin Core
