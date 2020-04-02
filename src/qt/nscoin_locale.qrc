@@ -1,0 +1,29 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/nscoin_bg.qm</file>
+        <file alias="ca">locale/nscoin_ca.qm</file>
+        <file alias="cs">locale/nscoin_cs.qm</file>
+        <file alias="da">locale/nscoin_da.qm</file>
+        <file alias="de">locale/nscoin_de.qm</file>
+        <file alias="en">locale/nscoin_en.qm</file>
+        <file alias="en_US">locale/nscoin_en_US.qm</file>
+        <file alias="es">locale/nscoin_es.qm</file>
+        <file alias="fi">locale/nscoin_fi.qm</file>
+        <file alias="fr_FR">locale/nscoin_fr_FR.qm</file>
+        <file alias="it">locale/nscoin_it.qm</file>
+        <file alias="ja">locale/nscoin_ja.qm</file>
+        <file alias="ko_KR">locale/nscoin_ko_KR.qm</file>
+        <file alias="nl">locale/nscoin_nl.qm</file>
+        <file alias="pl">locale/nscoin_pl.qm</file>
+        <file alias="pt">locale/nscoin_pt.qm</file>
+        <file alias="pt_BR">locale/nscoin_pt_BR.qm</file>
+        <file alias="ro_RO">locale/nscoin_ro_RO.qm</file>
+        <file alias="ru">locale/nscoin_ru.qm</file>
+        <file alias="sk">locale/nscoin_sk.qm</file>
+        <file alias="sv">locale/nscoin_sv.qm</file>
+        <file alias="tr">locale/nscoin_tr.qm</file>
+        <file alias="uk">locale/nscoin_uk.qm</file>
+        <file alias="zh_CN">locale/nscoin_zh_CN.qm</file>
+        <file alias="zh_TW">locale/nscoin_zh_TW.qm</file>
+    </qresource>
+</RCC>
