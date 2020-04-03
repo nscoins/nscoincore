@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,15 +24,14 @@
 #include "chainparams.h"
 #include "amount.h"
 #include "addressbookpage.h"
-#include "rpcblockchain.cpp"
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
 #include <QSettings>
 #include <QString>
 #include <QTimer>
-#include <QUrl>
-#include <QDesktopServices>
+
+
 
 
 
@@ -46,15 +45,12 @@ class TxViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 public:
-    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::NSC)
+    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::PRJ)
     {
     }
 
     inline void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
     {
-        QSettings settings;
-        QString theme = settings.value("theme", "").toString();
-
         painter->save();
 
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
@@ -74,7 +70,10 @@ public:
         bool confirmed = index.data(TransactionTableModel::ConfirmedRole).toBool();
         QVariant value = index.data(Qt::ForegroundRole);
         QColor foreground = COLOR_BLACK;
-
+        if (value.canConvert<QBrush>()) {
+            QBrush brush = qvariant_cast<QBrush>(value);
+            foreground = brush.color();
+        }
 
         painter->setPen(foreground);
         QRect boundingRect;
@@ -125,17 +124,6 @@ OverviewPage::OverviewPage(QWidget* parent) : QWidget(parent),
     nDisplayUnit = 0; // just make sure it's not unitialized
     ui->setupUi(this);
 
-    // ui->pushButton_Website->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/website")));
-    // ui->pushButton_Website->setStatusTip(tr("NSC Website"));
-    // ui->pushButton_Discord->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/discord")));
-    // ui->pushButton_Discord->setStatusTip(tr("NSC Discord"));
-    // ui->pushButton_Telegram->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/telegram")));
-    // ui->pushButton_Telegram->setStatusTip(tr("NSC Telegram"));
-    // ui->pushButton_Twitter->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/twitter")));
-    // ui->pushButton_Twitter->setStatusTip(tr("NSC Twitter"));
-    // ui->pushButton_Explorer->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/explorer")));
-    // ui->pushButton_Explorer->setStatusTip(tr("NSC Explorer"));
-
     // Recent transactions
     ui->listTransactions->setItemDelegate(txdelegate);
     ui->listTransactions->setIconSize(QSize(DECORATION_SIZE, DECORATION_SIZE));
@@ -175,8 +163,8 @@ OverviewPage::OverviewPage(QWidget* parent) : QWidget(parent),
     timerinfo_mn->start(1000);
 
     timerinfo_blockchain = new QTimer(this);
-    connect(timerinfo_blockchain, SIGNAL(timeout()), this, SLOT(updateBlockChainInfo()));
-    timerinfo_blockchain->start(1000); //30sec
+    connect(timerinfo_blockchain, SIGNAL(timeout()), this, SLOT(updatBlockChainInfo()));
+    timerinfo_blockchain->start(10000); //30sec
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
@@ -204,7 +192,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     currentWatchUnconfBalance = watchUnconfBalance;
     currentWatchImmatureBalance = watchImmatureBalance;
 
-    // nscoin labels
+    // ProjectCoin labels
 
     if(balance != 0)
         ui->labelBalance->setText(BitcoinUnits::floorHtmlWithoutUnit(nDisplayUnit, currentBalance, false, BitcoinUnits::separatorNever));
@@ -223,7 +211,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     // for symmetry reasons also show immature label when the watch-only one is shown
     ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
     ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
-//    ui->label_nscoin4->setVisible(showImmature || showWatchOnlyImmature);
+    ui->label_ProjectCoin4->setVisible(showImmature || showWatchOnlyImmature);
 
    // ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
 
@@ -280,8 +268,8 @@ void OverviewPage::setWalletModel(WalletModel* model)
 
         //----------
         // Keep up to date with wallet
-//        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getAnonymizedBalance(),
-//        model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
+        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getAnonymizedBalance(),
+        model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
         connect(model, SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)), this, SLOT(setBalance(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
 
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
@@ -290,12 +278,11 @@ void OverviewPage::setWalletModel(WalletModel* model)
         // connect(ui->obfuscationReset, SIGNAL(clicked()), this, SLOT(obfuscationReset()));
         // connect(ui->toggleObfuscation, SIGNAL(clicked()), this, SLOT(toggleObfuscation()));
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
-        connect(ui->blabel_nscoin, SIGNAL(clicked()), this, SLOT(openMyAddresses()));
+        connect(ui->blabel_ProjectCoin, SIGNAL(clicked()), this, SLOT(openMyAddresses()));
 
-        emit model->makeBalance();
     }
 
-    // update the display unit, to not use the default ("nscoin")
+    // update the display unit, to not use the default ("ProjectCoin")
     updateDisplayUnit();
 }
 
@@ -320,103 +307,9 @@ void OverviewPage::updateAlerts(const QString& warnings)
   //  this->ui->labelAlerts->setText(warnings);
 }
 
-double roi1, roi2, roi3;
-
-int64_t getViewCollateral(int blockHeight, int mn_level)
-{
-  if (blockHeight >= 0 && blockHeight < Params().LAST_POW_BLOCK()) {
-    switch(mn_level) {
-        case 0: return 250;
-        case 1: return 500;
-        case 2: return 1000;
-    }
-  } else if (blockHeight >= Params().LAST_POW_BLOCK() && blockHeight < 30000) {
-    switch(mn_level) {
-        case 0: return 500;
-        case 1: return 1000;
-        case 2: return 2000;
-    }
-  } else if (blockHeight >= 30000 && blockHeight < 70000) {
-    switch(mn_level) {
-        case 0: return 1000;
-        case 1: return 2000;
-        case 2: return 4000;
-    }
-  } else if (blockHeight >= 70000 && blockHeight < 120000) {
-    switch(mn_level) {
-        case 0: return 100000;
-        case 1: return 4000;
-        case 2: return 6000;
-    }
-} else if (blockHeight >= 120000 && blockHeight < 200000) {
-    switch(mn_level) {
-        case 0: return 100000;
-        case 1: return 6000;
-        case 2: return 10000;
-    }
-} else if (blockHeight >= 200000 && blockHeight < 300000) {
-    switch(mn_level) {
-        case 0: return 0; //turned off
-        case 1: return 100000;
-        case 2: return 20000;
-    }
-  } else if (blockHeight >= 300000 && blockHeight < 450000) {
-    switch(mn_level) {
-        case 0: return 0;
-        case 1: return 100000;
-        case 2: return 30000;
-    }
-  } else if (blockHeight >= 450000 && blockHeight < 750000) {
-    switch(mn_level) {
-        case 0: return 0;
-        case 1: return 100000;
-        case 2: return 40000;
-    }
-  } else if (blockHeight >= 750000 && blockHeight < 1500000) {
-    switch(mn_level) {
-        case 0: return 0;
-        case 1: return 100000;
-        case 2: return 50000;
-    }
-  } else if (blockHeight >= 1500000) {
-    switch(mn_level) {
-        case 0: return 0;
-        case 1: return 100000;
-        case 2: return 60000;
-    }
-  }
-}
-
-float GetViewMnPercent(int nHeight, unsigned mnlevel)
-{
-
-    if (nHeight < 70000) {
-        switch(mnlevel) {
-            case 0: return 0.10;
-            case 1: return 0.25;
-            case 2: return 0.55;
-        }
-    } else if (nHeight >= 70000 && nHeight < 200000) {
-        switch(mnlevel) {
-            case 0: return 0.05;
-            case 1: return 0.25;
-            case 2: return 0.55;
-        }
-  } else if (nHeight >= 200000) {
-        switch(mnlevel) {
-            case 0: return 0.0; // turned off
-            case 1: return 0.10;
-            case 2: return 0.70;
-        }
-    }
-
-    return 0;
-}
 
 void OverviewPage::updateMasternodeInfo()
 {
-  int CurrentBlock = clientModel->getNumBlocks();
-
   if (masternodeSync.IsBlockchainSynced() && masternodeSync.IsSynced())
   {
 
@@ -444,100 +337,117 @@ void OverviewPage::updateMasternodeInfo()
     ui->graphMN1->setMaximum(totalmn);
     ui->graphMN2->setMaximum(totalmn);
     ui->graphMN3->setMaximum(totalmn);
-    // ui->graphMN4->setMaximum(totalmn);
     ui->graphMN1->setValue(mn1);
     ui->graphMN2->setValue(mn2);
     ui->graphMN3->setValue(mn3);
-    // ui->graphMN4->setValue(mn4);
 
-    // TODO: need a read actual 24h blockcount from chain
-    int BlockCount24h = block24hCount > 0 ? block24hCount : 1440;
-
-    // update ROI
-    double BlockReward = GetBlockValue(CurrentBlock);
-    (mn1==0) ? roi1 = 0 : roi1 = (GetViewMnPercent(CurrentBlock, 0)*BlockReward*BlockCount24h)/mn1/COIN;
-    (mn2==0) ? roi2 = 0 : roi2 = (GetViewMnPercent(CurrentBlock, 1)*BlockReward*BlockCount24h)/mn2/COIN;
-    (mn3==0) ? roi3 = 0 : roi3 = (GetViewMnPercent(CurrentBlock, 2)*BlockReward*BlockCount24h)/mn3/COIN;
-    if (CurrentBlock >= 0) {
-        /*
-        ui->roi_1->setText(mn1==0 ? "-" : QString::number(((((0.4*BlockReward*1440)/mn1)*365)/3000)/1000000,'f',0).append("%"));
-        ui->roi_2->setText(mn2==0 ? "-" : QString::number(((((0.2*BlockReward*1440)/mn2)*365)/10000)/1000000,'f',0).append("%"));
-        ui->roi_3->setText(mn3==0 ? "-" : QString::number(((((0.2*BlockReward*1440)/mn3)*365)/25000)/1000000,'f',0).append("%"));
-        ui->roi_4->setText(mn4==0 ? "-" : QString::number(((((0.02*BlockReward*1440)/mn4)*365)/100000)/1000000,'f',0).append("%"));
-        */
-        ui->roi_11->setText(mn1==0 ? "-" : QString::number(roi1,'f',0).append("  |"));
-        ui->roi_21->setText(mn2==0 ? "-" : QString::number(roi2,'f',0).append("  |"));
-        ui->roi_31->setText(mn3==0 ? "-" : QString::number(roi3,'f',0).append("  |"));
-        // ui->roi_41->setText(mn4==0 ? "-" : QString::number(roi4,'f',0).append("  |"));
-
-        ui->roi_12->setText(mn1==0 ? " " : QString::number( getViewCollateral(CurrentBlock, 0)/roi1,'f',1).append(" days"));
-        ui->roi_22->setText(mn2==0 ? " " : QString::number( getViewCollateral(CurrentBlock, 1)/roi2,'f',1).append(" days"));
-        ui->roi_32->setText(mn3==0 ? " " : QString::number( getViewCollateral(CurrentBlock, 2)/roi3,'f',1).append(" days"));
-        // ui->roi_42->setText(mn4==0 ? " " : QString::number(250000/roi4,'f',1).append(" days"));
-    }
-    CAmount tNodesSumm = mn1 * getViewCollateral(CurrentBlock, 0) + mn2* getViewCollateral(CurrentBlock, 1) + mn3* getViewCollateral(CurrentBlock, 2);
-    CAmount tMoneySupply = chainActive.Tip()->nMoneySupply;
-    double tLocked = tMoneySupply > 0 ? 100 * static_cast<double>(tNodesSumm) / static_cast<double>(tMoneySupply / COIN) : 0;
-    ui->label_LockedCoin_value->setText(QString::number(tNodesSumm).append(" (" + QString::number(tLocked,'f',1) + "%)"));
-
-    // update timer
-    if (timerinfo_mn->interval() == 1000)
-            timerinfo_mn->setInterval(10000);
+    if(timerinfo_mn->interval() == 1000)
+           timerinfo_mn->setInterval(180000);
   }
 
   // update collateral info
-  if (CurrentBlock >= 0) {
-    if (CurrentBlock < 70000) {
-      ui->label->setText("Min: ");
-      ui->label_lcolat->setText( QString::number(getViewCollateral(CurrentBlock, 0)).append(" NSC") );
-      ui->label_mn1_percent->setText( QString::number(GetViewMnPercent(CurrentBlock, 0) * 100).append(" %") );
-      ui->label_2->setText("Med: ");
-      ui->label_3->setText("Max: ");
-    } else if (CurrentBlock >= 70000 && CurrentBlock < 200000) {
-      ui->label->setText("Foundation: ");
-      ui->label_lcolat->setText( QString::number(getViewCollateral(CurrentBlock, 0)).append(" NSC") );
-      ui->label_mn1_percent->setText( QString::number(GetViewMnPercent(CurrentBlock, 0) * 100).append(" %") );
-      ui->label_2->setText("Min: ");
-      ui->label_3->setText("Max: ");
-    } else {
-      ui->label->setText("Min: ");
-      ui->label_lcolat->setText( " OFF" );
-      ui->label_mn1_percent->setText( " " );
-      ui->label_2->setText("Foundation: ");
-      ui->label_3->setText("Regular: ");
-    }
-      ui->label_mcolat->setText( QString::number(getViewCollateral(CurrentBlock, 1)).append(" NSC") );
-      ui->label_fcolat->setText( QString::number(getViewCollateral(CurrentBlock, 2)).append(" NSC") );
-      // ui->label_pcolat->setText("250000 NSC");
-      ui->label_mn2_percent->setText( QString::number(GetViewMnPercent(CurrentBlock, 1) * 100).append(" %") );
-      ui->label_mn3_percent->setText( QString::number(GetViewMnPercent(CurrentBlock, 2) * 100).append(" %") );
+  if (chainActive.Height() >= 0 && chainActive.Height() < 2000) {
+    ui->label_lcolat->setText("250 Coins");
+    ui->label_mcolat->setText("500 Coins");
+    ui->label_fcolat->setText("1000 Coins");
+  } else if (chainActive.Height() >= 2000 && chainActive.Height() < 10000) {
+    ui->label_lcolat->setText("500 Coins");
+    ui->label_mcolat->setText("1000 Coins");
+    ui->label_fcolat->setText("1500 Coins");
+  } else if (chainActive.Height() >= 10000 && chainActive.Height() < 30000) {
+    ui->label_lcolat->setText("1000 Coins");
+    ui->label_mcolat->setText("1500 Coins");
+    ui->label_fcolat->setText("3000 Coins");
+  } else if (chainActive.Height() >= 30000 && chainActive.Height() < 60000) {
+    ui->label_lcolat->setText("1500 Coins");
+    ui->label_mcolat->setText("3000 Coins");
+    ui->label_fcolat->setText("4000 Coins");
+  } else if (chainActive.Height() >= 60000 && chainActive.Height() < 100000) {
+    ui->label_lcolat->setText("3000 Coins");
+    ui->label_mcolat->setText("4000 Coins");
+    ui->label_fcolat->setText("6000 Coins");
+  } else if (chainActive.Height() >= 100000 && chainActive.Height() < 180000) {
+    ui->label_lcolat->setText("4000 Coins");
+    ui->label_mcolat->setText("6000 Coins");
+    ui->label_fcolat->setText("8000 Coins");
+  } else if (chainActive.Height() >= 180000 && chainActive.Height() < 250000) {
+    ui->label_lcolat->setText("6000 Coins");
+    ui->label_mcolat->setText("8000 Coins");
+    ui->label_fcolat->setText("10000 Coins");
+  } else if (chainActive.Height() >= 250000 && chainActive.Height() < 500000) {
+    ui->label_lcolat->setText("80000 Coins");
+    ui->label_mcolat->setText("100000 Coins");
+    ui->label_fcolat->setText("150000 Coins");
+  } else if (chainActive.Height() >= 500000 && chainActive.Height() < 750000) {
+    ui->label_lcolat->setText("100000 Coins");
+    ui->label_mcolat->setText("150000 Coins");
+    ui->label_fcolat->setText("200000 Coins");
+  } else if (chainActive.Height() >= 750000 && chainActive.Height() < 1250000) {
+    ui->label_lcolat->setText("15000 Coins");
+    ui->label_mcolat->setText("200000 Coins");
+    ui->label_fcolat->setText("250000 Coins");
+  } else {
+    ui->label_lcolat->setText("200000 Coins");
+    ui->label_mcolat->setText("250000 Coins");
+    ui->label_fcolat->setText("300000 Coins");
   }
 
 }
 
-void OverviewPage::updateBlockChainInfo()
+
+
+void OverviewPage::updatBlockChainInfo()
 {
-    if (masternodeSync.IsBlockchainSynced())
-    {
-        int CurrentBlock = clientModel->getNumBlocks();
-        int64_t netHashRate = chainActive.GetNetworkHashPS(24, CurrentBlock-1);
-        double BlockReward = GetBlockValue(CurrentBlock);
-        double BlockRewardnscoin =  static_cast<double>(BlockReward/COIN);
-        double CurrentDiff = GetDifficulty();
+ if (masternodeSync.IsBlockchainSynced())
+ {
+int CurrentBlock = (int)chainActive.Height();
+int64_t netHashRate = chainActive.GetNetworkHashPS(24, CurrentBlock-1);
+int64_t BlockReward = GetBlockValue(chainActive.Height());
+double BlockRewardProjectCoin =  static_cast<double>(BlockReward/COIN);
+//int64_t ProjectCoinSupply = chainActive.Tip()->nMoneySupply / COIN;
 
-        ui->label_CurrentBlock_value->setText(QString::number(CurrentBlock));
+ui->label_CurrentBlock_value->setText(QString::number(CurrentBlock));
 
-        ui->label_Nethash->setText(tr("Difficulty:"));
-        ui->label_Nethash_value->setText(QString::number(CurrentDiff,'f',4));
 
-        ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewardnscoin, 'f', 1));
+// int BitGunLevel = 0;
+//     for (auto it =  Params().GetSubsidySwitchPoints().begin(); it != Params().GetSubsidySwitchPoints().end(); ++it)
+//     {
+//         BitGunLevel++;
+//         if (it->second == BlockReward)
+//         {
+//             break;
+//         }
+//     }
+// ui->label_CurrentBitGun_value->setText(QString::number(BitGunLevel));
 
-        ui->label_Supply_value->setText(QString::number(chainActive.Tip()->nMoneySupply / COIN).append(" NSC"));
 
-        ui->label_24hBlock_value->setText(QString::number(block24hCount));
-        ui->label_24hPoS_value->setText(QString::number(static_cast<double>(posMin)/COIN,'f',1).append(" | ") + QString::number(static_cast<double>(posMax)/COIN,'f',1));
-        ui->label_24hPoSMedian_value->setText(QString::number(static_cast<double>(posMedian)/COIN,'f',1));
-    }
+double  nethash_mhs = static_cast<double>(netHashRate/1000000) ;
+
+
+if (nethash_mhs >= 1000000)
+{
+    ui->label_Nethash->setText(tr("Nethash THs:"));
+    ui->label_Nethash_value->setText(QString::number(nethash_mhs/1000000,'f',2));
+}
+
+else if  (nethash_mhs >= 1000)
+{
+    ui->label_Nethash->setText(tr("Nethash GHs:"));
+    ui->label_Nethash_value->setText(QString::number(nethash_mhs/1000,'f',2));
+}
+
+else
+{
+    ui->label_Nethash->setText(tr("Nethash MHs:"));
+    ui->label_Nethash_value->setText(QString::number(nethash_mhs));
+}
+
+
+ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewardProjectCoin));
+//ui->label_ProjectCoinSupply_value->setText(QString::number(ProjectCoinSupply));
+
+
+  }
 }
 
 void OverviewPage::openMyAddresses()
@@ -557,22 +467,20 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
 
 void OverviewPage::updateObfuscationProgress()
 {
-    return; // not used at this time
-
     if (!masternodeSync.IsBlockchainSynced() || ShutdownRequested()) return;
 
     if (!pwalletMain) return;
 
     QString strAmountAndRounds;
-    QString strAnonymizePhcAmount = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nAnonymizePhcAmount * COIN, false, BitcoinUnits::separatorAlways);
+    QString strAnonymizePrjAmount = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nAnonymizePrjAmount * COIN, false, BitcoinUnits::separatorAlways);
 
     if (currentBalance == 0) {
         // ui->obfuscationProgress->setValue(0);
         // ui->obfuscationProgress->setToolTip(tr("No inputs detected"));
 
         // when balance is zero just show info from settings
-        strAnonymizePhcAmount = strAnonymizePhcAmount.remove(strAnonymizePhcAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
-        strAmountAndRounds = strAnonymizePhcAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
+        strAnonymizePrjAmount = strAnonymizePrjAmount.remove(strAnonymizePrjAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
+        strAmountAndRounds = strAnonymizePrjAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
 
         // ui->labelAmountRounds->setToolTip(tr("No inputs detected"));
         // ui->labelAmountRounds->setText(strAmountAndRounds);
@@ -599,20 +507,20 @@ void OverviewPage::updateObfuscationProgress()
     CAmount nMaxToAnonymize = nAnonymizableBalance + currentAnonymizedBalance + nDenominatedUnconfirmedBalance;
 
     // If it's more than the anon threshold, limit to that.
-    if (nMaxToAnonymize > nAnonymizePhcAmount * COIN) nMaxToAnonymize = nAnonymizePhcAmount * COIN;
+    if (nMaxToAnonymize > nAnonymizePrjAmount * COIN) nMaxToAnonymize = nAnonymizePrjAmount * COIN;
 
     if (nMaxToAnonymize == 0) return;
 
-    if (nMaxToAnonymize >= nAnonymizePhcAmount * COIN) {
+    if (nMaxToAnonymize >= nAnonymizePrjAmount * COIN) {
         // ui->labelAmountRounds->setToolTip(tr("Found enough compatible inputs to anonymize %1")
-        //                                       .arg(strAnonymizePhcAmount));
-        strAnonymizePhcAmount = strAnonymizePhcAmount.remove(strAnonymizePhcAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
-        strAmountAndRounds = strAnonymizePhcAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
+        //                                       .arg(strAnonymizePrjAmount));
+        strAnonymizePrjAmount = strAnonymizePrjAmount.remove(strAnonymizePrjAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
+        strAmountAndRounds = strAnonymizePrjAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
     } else {
         QString strMaxToAnonymize = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nMaxToAnonymize, false, BitcoinUnits::separatorAlways);
         // ui->labelAmountRounds->setToolTip(tr("Not enough compatible inputs to anonymize <span style='color:red;'>%1</span>,<br>"
         //                                      "will anonymize <span style='color:red;'>%2</span> instead")
-        //                                       .arg(strAnonymizePhcAmount)
+        //                                       .arg(strAnonymizePrjAmount)
         //                                       .arg(strMaxToAnonymize));
         strMaxToAnonymize = strMaxToAnonymize.remove(strMaxToAnonymize.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
         strAmountAndRounds = "<span style='color:red;'>" +
@@ -783,31 +691,10 @@ void OverviewPage::toggleObfuscation()
 
         /* show obfuscation configuration if client has defaults set */
 
-        if (nAnonymizePhcAmount == 0) {
+        if (nAnonymizePrjAmount == 0) {
             ObfuscationConfig dlg(this);
             dlg.setModel(walletModel);
             dlg.exec();
         }
     }
 }
-
-// void OverviewPage::on_pushButton_Website_clicked() {
-//     QDesktopServices::openUrl(QUrl("https://ftxo.pro/", QUrl::TolerantMode));
-// }
-// void OverviewPage::on_pushButton_Discord_clicked() {
-//     QDesktopServices::openUrl(QUrl("https://ftxo.pro/link/discord", QUrl::TolerantMode));
-// }
-// void OverviewPage::on_pushButton_Telegram_clicked() {
-//     QDesktopServices::openUrl(QUrl("https://ftxo.pro/link/telegram", QUrl::TolerantMode));
-// }
-// void OverviewPage::on_pushButton_Twitter_clicked() {
-//     QDesktopServices::openUrl(QUrl("https://ftxo.pro/link/twitter", QUrl::TolerantMode));
-// }
-/*
-void OverviewPage::on_pushButton_Facebook_clicked() {
-    QDesktopServices::openUrl(QUrl("https://www.facebook.com/groups/2119238971663027/about/", QUrl::TolerantMode));
-}
-*/
-// void OverviewPage::on_pushButton_Explorer_clicked() {
-//     QDesktopServices::openUrl(QUrl("https://ftxo.pro/link/explorer", QUrl::TolerantMode));
-// }

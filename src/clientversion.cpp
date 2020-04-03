@@ -10,10 +10,10 @@
 
 /**
  * Name of client reported in the 'version' message. Report the same name
- * for both nscoind and nscoin-qt, to make it harder for attackers to
+ * for both projectcoind and projectcoin-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("NSC Core");
+const std::string CLIENT_NAME("ProjectCoin Core");
 
 /**
  * Client version number
@@ -44,8 +44,8 @@ const std::string CLIENT_NAME("NSC Core");
 
 //! git will put "#define GIT_ARCHIVE 1" on the next line inside archives.
 #ifdef GIT_ARCHIVE
-#define GIT_COMMIT_ID "da03925"
-#define GIT_COMMIT_DATE "Thu Jun 20 08:07:11 2019 -0700"
+#define GIT_COMMIT_ID "62f4632"
+#define GIT_COMMIT_DATE "Tue Aug 21 16:21:20 2018 +0200"
 #endif
 
 #define BUILD_DESC_WITH_SUFFIX(maj, min, rev, build, suffix) \
@@ -88,9 +88,7 @@ static std::string FormatVersion(int nVersion)
 
 std::string FormatFullVersion()
 {
-    return strprintf("%d.%d.%d.%d", CLIENT_VERSION_MAJOR, CLIENT_VERSION_MINOR, CLIENT_VERSION_REVISION, CLIENT_VERSION_BUILD);
-//    return "2.0.4.11";
-//    return CLIENT_BUILD;
+    return CLIENT_BUILD;
 }
 
 /**

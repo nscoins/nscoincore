@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -19,7 +19,7 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast)
 {
-    /* current difficulty formula, nscoin - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
+    /* current difficulty formula, ProjectCoin - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
     const CBlockIndex* BlockLastSolved = pindexLast;
     const CBlockIndex* BlockReading = pindexLast;
     int64_t nActualTimespan = 0;
@@ -30,9 +30,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast)
     uint256 PastDifficultyAverage;
     uint256 PastDifficultyAveragePrev;
 
-    if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight < PastBlocksMin||
-        (pindexLast->nHeight >= Params().LAST_POW_BLOCK() && pindexLast->nHeight <= Params().LAST_POW_BLOCK() + 5) // // resetting difficulty for 5 blocks for pos to start
-         || (pindexLast->nHeight >= 2000 && pindexLast->nHeight < Params().LAST_POW_BLOCK()) && pindexLast->nHeight % 100 == 0 ) { // reseting every 100 blocks between 1.8k and 8k
+    if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight < PastBlocksMin) {
         return Params().StartWork().GetCompact();
     }
 
@@ -92,18 +90,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast)
     }
 
     uint256 bnNew(PastDifficultyAverage);
-    int64_t _nTargetTimespan;
-    //int64_t _nTargetTimespan = CountBlocks * (pindexLast->nHeight > Params().LAST_POW_BLOCK() ? Params().TargetSpacing() : Params().TargetSpacingSlowLaunch());
-    if (pindexLast->nHeight <= 2000 ) { // changing block time
-      _nTargetTimespan = CountBlocks * Params().TargetSpacingSlowLaunch(); // 4 min
 
-    } else if (pindexLast->nHeight > 2000 && pindexLast->nHeight <= Params().LAST_POW_BLOCK()) { // aka from 2k to 8k
-      _nTargetTimespan = CountBlocks * (3 * 60); // 3 min
-
-    } else {
-      _nTargetTimespan = CountBlocks * Params().TargetSpacing(); // 1 min
-
-    }
+    int64_t _nTargetTimespan = CountBlocks * (pindexLast->nHeight > 750000 ? Params().TargetSpacing() : Params().TargetSpacingSlowLaunch());
 
     if (nActualTimespan < _nTargetTimespan / 3)
         nActualTimespan = _nTargetTimespan / 3;
@@ -135,6 +123,10 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
     // Check range
     if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
         return error("CheckProofOfWork() : nBits below minimum work");
+
+    // Check proof of work matches claimed amount
+    if (hash > bnTarget)
+        return error("CheckProofOfWork() : hash doesn't match nBits");
 
     return true;
 }

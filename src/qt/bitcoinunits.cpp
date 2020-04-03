@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2018 The nscoin Core developers
+// Copyright (c) 2017-2018 The PRJ Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,18 +20,18 @@ BitcoinUnits::BitcoinUnits(QObject* parent) : QAbstractListModel(parent),
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(NSC);
-   // unitlist.append(mNSC);
-   // unitlist.append(uNSC);
+    unitlist.append(PRJ);
+   // unitlist.append(mPRJ);
+   // unitlist.append(uPRJ);
     return unitlist;
 }
 
 bool BitcoinUnits::valid(int unit)
 {
     switch (unit) {
-    case NSC:
-    case mNSC:
-    case uNSC:
+    case PRJ:
+    case mPRJ:
+    case uPRJ:
         return true;
     default:
         return false;
@@ -41,12 +41,12 @@ bool BitcoinUnits::valid(int unit)
 QString BitcoinUnits::id(int unit)
 {
     switch (unit) {
-    case NSC:
-        return QString("NSC");
-    case mNSC:
-        return QString("mNSC");
-    case uNSC:
-        return QString::fromUtf8("uNSC");
+    case PRJ:
+        return QString("prj");
+    case mPRJ:
+        return QString("mprj");
+    case uPRJ:
+        return QString::fromUtf8("uprj");
     default:
         return QString("???");
     }
@@ -56,23 +56,23 @@ QString BitcoinUnits::name(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case NSC:
-            return QString("NSC");
-        case mNSC:
-            return QString("mNSC");
-        case uNSC:
-            return QString::fromUtf8("μNSC");
+        case PRJ:
+            return QString("PRJ");
+        case mPRJ:
+            return QString("PRJ");
+        case uPRJ:
+            return QString::fromUtf8("μPRJ");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case NSC:
-            return QString("tNSC");
-        case mNSC:
-            return QString("mNSC");
-        case uNSC:
-            return QString::fromUtf8("μtNSC");
+        case PRJ:
+            return QString("tPRJ");
+        case mPRJ:
+            return QString("mPRJ");
+        case uPRJ:
+            return QString::fromUtf8("μtPRJ");
         default:
             return QString("???");
         }
@@ -83,23 +83,23 @@ QString BitcoinUnits::description(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case NSC:
-            return QString("NSC");
-        case mNSC:
-            return QString("Milli-NSC (1 / 1" THIN_SP_UTF8 "000)");
-        case uNSC:
-            return QString("Micro-NSC (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case PRJ:
+            return QString("PRJ");
+        case mPRJ:
+            return QString("Milli-PRJ (1 / 1" THIN_SP_UTF8 "000)");
+        case uPRJ:
+            return QString("Micro-PRJ (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case NSC:
-            return QString("TestNSCs");
-        case mNSC:
-            return QString("Milli-TestNSCs (1 / 1" THIN_SP_UTF8 "000)");
-        case uNSC:
-            return QString("Micro-TestNSCs (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case PRJ:
+            return QString("TestPRJs");
+        case mPRJ:
+            return QString("Milli-TestPRJs (1 / 1" THIN_SP_UTF8 "000)");
+        case uPRJ:
+            return QString("Micro-TestPRJs (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
@@ -109,11 +109,11 @@ QString BitcoinUnits::description(int unit)
 qint64 BitcoinUnits::factor(int unit)
 {
     switch (unit) {
-    case NSC:
+    case PRJ:
         return 100000000;
-    case mNSC:
+    case mPRJ:
         return 100000;
-    case uNSC:
+    case uPRJ:
         return 100;
     default:
         return 100000000;
@@ -123,11 +123,11 @@ qint64 BitcoinUnits::factor(int unit)
 int BitcoinUnits::decimals(int unit)
 {
     switch (unit) {
-    case NSC:
+    case PRJ:
         return 8;
-    case mNSC:
+    case mPRJ:
         return 5;
-    case uNSC:
+    case uPRJ:
         return 2;
     default:
         return 0;

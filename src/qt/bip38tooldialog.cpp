@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,14 +27,6 @@ Bip38ToolDialog::Bip38ToolDialog(QWidget* parent) : QDialog(parent),
                                                     model(0)
 {
     ui->setupUi(this);
-
-    ui->addressBookButton_ENC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/address-book")));
-    ui->pasteButton_ENC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/editpaste")));
-    ui->copyKeyButton_ENC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/editcopy")));
-    ui->encryptKeyButton_ENC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/edit")));
-    ui->clearButton_ENC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-    ui->decryptKeyButton_DEC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/transaction_0")));
-    ui->clearButton_DEC->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
 
 #if QT_VERSION >= 0x040700
     ui->decryptedKeyOut_DEC->setPlaceholderText(tr("Click \"Decrypt Key\" to compute key"));

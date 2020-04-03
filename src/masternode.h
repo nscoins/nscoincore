@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,9 +16,9 @@
 #include "util.h"
 
 #define MASTERNODE_MIN_CONFIRMATIONS 15
-#define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
+#define MASTERNODE_MIN_MNP_SECONDS (4 * 60)
 #define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
-#define MASTERNODE_PING_SECONDS (15 * 60)
+#define MASTERNODE_PING_SECONDS (4 * 60)
 #define MASTERNODE_EXPIRATION_SECONDS (120 * 60)
 #define MASTERNODE_REMOVAL_SECONDS (130 * 60)
 #define MASTERNODE_CHECK_SECONDS 5
@@ -102,7 +102,7 @@ public:
 };
 
 //
-// The Masternode Class. For managing the Obfuscation process. It contains the inputs, signature to prove
+// The Masternode Class. For managing the Obfuscation process. It contains the input of the (1000, 5000, 10000) ProjectCoin, signature to prove
 // it's the one who own that ip address and code for calculating the payment election.
 //
 class CMasternode
@@ -123,8 +123,7 @@ public:
     enum LevelValue : unsigned {
         UNSPECIFIED = 0u,
         MIN = 1u,
-//        MAX = 3u,
-        MAX = 4u,
+        MAX = 3u,
     };
 
     CTxIn vin;
@@ -217,7 +216,6 @@ public:
         READWRITE(nLastDsq);
     }
 
-//    int64_t SecondsSincePayment(bool test = false);
     int64_t SecondsSincePayment();
 
     bool UpdateFromNewBroadcast(CMasternodeBroadcast& mnb);
@@ -279,7 +277,6 @@ public:
         return Level(deposit, chainActive.Height());
     }
 
-//    int64_t GetLastPaid(bool test = false);
     int64_t GetLastPaid();
     bool IsValidNetAddr();
 };

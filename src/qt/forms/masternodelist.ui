@@ -73,7 +73,6 @@
              </item>
             </layout>
            </item>
-           
            <item>
             <widget class="QTableWidget" name="tableWidgetMyMasternodes">
              <property name="minimumSize">
@@ -138,16 +137,6 @@
              <column>
               <property name="text">
                <string>Payee</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>24h Coins</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Luck</string>
               </property>
              </column>
             </widget>
@@ -321,16 +310,6 @@
            <column>
             <property name="text">
              <string>Payee</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>24h Coins</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Luck</string>
             </property>
            </column>
           </widget>

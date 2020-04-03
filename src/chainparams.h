@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX Core developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,7 +28,7 @@ struct CDNSSeedData {
 
 /**
  * CChainParams defines various tweakable parameters of a given instance of the
- * nscoin system. There are three: the main network on which people trade goods
+ * ProjectCoin system. There are three: the main network on which people trade goods
  * and services, the public test network which gets reset from time to time and
  * a regression test mode which is intended for private networks only. It has
  * minimal difficulty to ensure that blocks can be found instantly.
@@ -51,8 +51,8 @@ public:
     const MessageStartChars& MessageStart() const { return pchMessageStart; }
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
 
-    // const std::vector<unsigned char>& nscoinDevKey() const { return vnscoinDevKey; }
-    // const std::vector<unsigned char>& nscoinFundKey() const { return vnscoinFundKey; }
+    // const std::vector<unsigned char>& ProjectCoinDevKey() const { return vProjectCoinDevKey; }
+    // const std::vector<unsigned char>& ProjectCoinFundKey() const { return vProjectCoinFundKey; }
     // int GetDevFee() const { return nDevFee; }
     // int GetFundFee() const { return nFundFee; }
 
@@ -84,8 +84,7 @@ public:
     int64_t TargetSpacingSlowLaunch() const { return nTargetSpacingSlowLaunch; }
     /** Instamine Prevention, Zero reward to block **/
     // int ANTI_INSTAMINE_TIME() const { return nAntiInstamineTime; }
-    // int COINBASE_MATURITY() const { return nMaturity; }
-
+    int COINBASE_MATURITY() const { return nMaturity; }
     CAmount MaxMoneyOut() const { return nMaxMoneyOut; }
     /** The masternode count that we will allow the see-saw reward payments to be off by */
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
@@ -102,6 +101,7 @@ public:
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
     std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
+    int64_t StartMasternodePayments() const { return nStartMasternodePayments; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
 
     /** Height or Time Based Activations **/
@@ -118,8 +118,8 @@ protected:
     MessageStartChars pchMessageStart;
     //! Raw pub key bytes for the broadcast alert signing key.
     std::vector<unsigned char> vAlertPubKey;
-    // std::vector<unsigned char> vnscoinDevKey;
-    // std::vector<unsigned char> vnscoinFundKey;
+    // std::vector<unsigned char> vProjectCoinDevKey;
+    // std::vector<unsigned char> vProjectCoinFundKey;
     // int nDevFee;
     // int nFundFee;
     int nDefaultPort;
@@ -135,7 +135,7 @@ protected:
     int nLastPOWBlock;
     int nStartMasternodePaymentsBlock;
     int nMasternodeCountDrift;
-    // int nMaturity;
+    int nMaturity;
     int nModifierUpdateBlock;
     CAmount nMaxMoneyOut;
     int nMinerThreads;

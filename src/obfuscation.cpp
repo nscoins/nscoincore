@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -38,7 +38,7 @@ map<uint256, CObfuscationBroadcastTx> mapObfuscationBroadcastTxes;
 // Keep track of the active Masternode
 CActiveMasternode activeMasternode;
 
-/* *** BEGIN OBFUSCATION MAGIC - nscoin **********
+/* *** BEGIN OBFUSCATION MAGIC - ProjectCoin **********
     Copyright (c) 2014-2015, Dash Developers
         eduffield - evan@dashpay.io
         udjinm6   - udjinm6@dashpay.io
@@ -778,9 +778,9 @@ void CObfuscationPool::ChargeRandomFees()
 
                 Being that Obfuscation has "no fees" we need to have some kind of cost associated
                 with using it to stop abuse. Otherwise it could serve as an attack vector and
-                allow endless transaction that would bloat nscoin and make it unusable. To
+                allow endless transaction that would bloat ProjectCoin and make it unusable. To
                 stop these kinds of attacks 1 in 10 successful transactions are charged. This
-                adds up to a cost of 0.001 nscoin per transaction on average.
+                adds up to a cost of 0.001 ProjectCoin per transaction on average.
             */
             if (r <= 10) {
                 LogPrintf("CObfuscationPool::ChargeRandomFees -- charging random fees. %u\n", i);
@@ -1433,7 +1433,7 @@ bool CObfuscationPool::DoAutomaticDenominating(bool fDryRun)
         // should have some additional amount for them
         nLowestDenom += OBFUSCATION_COLLATERAL * 4;
 
-    CAmount nBalanceNeedsAnonymized = nAnonymizePhcAmount * COIN - pwalletMain->GetAnonymizedBalance();
+    CAmount nBalanceNeedsAnonymized = nAnonymizePrjAmount * COIN - pwalletMain->GetAnonymizedBalance();
 
     // if balanceNeedsAnonymized is more than pool max, take the pool max
     if (nBalanceNeedsAnonymized > OBFUSCATION_POOL_MAX) nBalanceNeedsAnonymized = OBFUSCATION_POOL_MAX;
@@ -1916,10 +1916,10 @@ void CObfuscationPool::GetDenominationsToString(int nDenom, std::string& strDeno
 {
     // Function returns as follows:
     //
-    // bit 0 - 100nscoin+1 ( bit on if present )
-    // bit 1 - 10nscoin+1
-    // bit 2 - 1nscoin+1
-    // bit 3 - .1nscoin+1
+    // bit 0 - 100ProjectCoin+1 ( bit on if present )
+    // bit 1 - 10ProjectCoin+1
+    // bit 2 - 1ProjectCoin+1
+    // bit 3 - .1ProjectCoin+1
     // bit 3 - non-denom
 
 
@@ -1989,10 +1989,10 @@ int CObfuscationPool::GetDenominations(const std::vector<CTxOut>& vout, bool fSi
 
     // Function returns as follows:
     //
-    // bit 0 - 100nscoin+1 ( bit on if present )
-    // bit 1 - 10nscoin+1
-    // bit 2 - 1nscoin+1
-    // bit 3 - .1nscoin+1
+    // bit 0 - 100ProjectCoin+1 ( bit on if present )
+    // bit 1 - 10ProjectCoin+1
+    // bit 2 - 1ProjectCoin+1
+    // bit 3 - .1ProjectCoin+1
 
     return denom;
 }
@@ -2289,7 +2289,7 @@ void ThreadCheckObfuScationPool()
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
 
     // Make this thread recognisable as the wallet flushing thread
-    RenameThread("nscoin-obfuscation");
+    RenameThread("projectcoin-obfuscation");
 
     unsigned int c = 0;
 

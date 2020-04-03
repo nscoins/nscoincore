@@ -22,12 +22,6 @@ SendCoinsEntry::SendCoinsEntry(QWidget* parent) : QStackedWidget(parent),
 {
     ui->setupUi(this);
 
-    ui->addressBookButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/address-book")));
-    ui->pasteButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/editpaste")));
-    ui->deleteButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-    ui->deleteButton_is->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-    ui->deleteButton_s->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-
     setCurrentWidget(ui->SendCoins);
 
 #ifdef Q_OS_MAC
@@ -37,9 +31,9 @@ SendCoinsEntry::SendCoinsEntry(QWidget* parent) : QStackedWidget(parent),
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
 #endif
 
-    // normal nscoin address field
+    // normal projectcoin address field
     GUIUtil::setupAddressWidget(ui->payTo, this);
-    // just a label for displaying nscoin address(es)
+    // just a label for displaying projectcoin address(es)
     ui->payTo_is->setFont(GUIUtil::bitcoinAddressFont());
 
     // Connect signals
@@ -47,7 +41,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget* parent) : QStackedWidget(parent),
     connect(ui->deleteButton, SIGNAL(clicked()), this, SLOT(deleteClicked()));
     connect(ui->deleteButton_is, SIGNAL(clicked()), this, SLOT(deleteClicked()));
     connect(ui->deleteButton_s, SIGNAL(clicked()), this, SLOT(deleteClicked()));
-
+ 
 }
 
 SendCoinsEntry::~SendCoinsEntry()

@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 
 #include "multisenddialog.h"
 #include "addressbookpage.h"
@@ -9,7 +9,6 @@
 #include "base58.h"
 #include "init.h"
 #include "ui_multisenddialog.h"
-#include "guiutil.h"
 #include "walletmodel.h"
 #include <QLineEdit>
 #include <QMessageBox>
@@ -23,8 +22,6 @@ MultiSendDialog::MultiSendDialog(QWidget* parent) : QDialog(parent),
                                                     model(0)
 {
     ui->setupUi(this);
-
-    ui->addressBookButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/address-book")));
 
     updateCheckBoxes();
 }

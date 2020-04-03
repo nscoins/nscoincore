@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -78,7 +78,7 @@ extern double NSAppKitVersionNumber;
 #endif
 #endif
 
-#define URI_SCHEME "nscoin"
+#define URI_SCHEME "projectcoin"
 
 namespace GUIUtil
 {
@@ -111,7 +111,7 @@ void setupAddressWidget(QValidatedLineEdit* widget, QWidget* parent)
 #if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
-    widget->setPlaceholderText(QObject::tr("Enter a NSC address (e.g. %1)").arg("FnP83sKxi2yoSUsjMj7xrNsMdLJGnLsinp"));
+    widget->setPlaceholderText(QObject::tr("Enter a ProjectCoin address (e.g. %1)").arg("XEBxEjGXmJxwpXxXAJqeXztdUR4MsZZJsE"));
 #endif
     widget->setValidator(new BitcoinAddressEntryValidator(parent));
     widget->setCheckValidator(new BitcoinAddressCheckValidator(parent));
@@ -128,7 +128,7 @@ void setupAmountWidget(QLineEdit* widget, QWidget* parent)
 
 bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out)
 {
-    // return if URI is not valid or is no nscoin: URI
+    // return if URI is not valid or is no ProjectCoin: URI
     if (!uri.isValid() || uri.scheme() != QString(URI_SCHEME))
         return false;
 
@@ -162,7 +162,7 @@ bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out)
             fShouldReturnFalse = false;
         } else if (i->first == "amount") {
             if (!i->second.isEmpty()) {
-                if (!BitcoinUnits::parse(BitcoinUnits::NSC, i->second, &rv.amount)) {
+                if (!BitcoinUnits::parse(BitcoinUnits::PRJ, i->second, &rv.amount)) {
                     return false;
                 }
             }
@@ -180,9 +180,9 @@ bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out)
 
 bool parseBitcoinURI(QString uri, SendCoinsRecipient* out)
 {
-    // Convert nscoin:// to nscoin:
+    // Convert projectcoin:// to projectcoin:
     //
-    //    Cannot handle this later, because nscoin:// will cause Qt to see the part after // as host,
+    //    Cannot handle this later, because projectcoin:// will cause Qt to see the part after // as host,
     //    which will lower-case it (and thus invalidate the address).
     if (uri.startsWith(URI_SCHEME "://", Qt::CaseInsensitive)) {
         uri.replace(0, std::strlen(URI_SCHEME) + 3, URI_SCHEME ":");
@@ -197,7 +197,7 @@ QString formatBitcoinURI(const SendCoinsRecipient& info)
     int paramCount = 0;
 
     if (info.amount) {
-        ret += QString("?amount=%1").arg(BitcoinUnits::format(BitcoinUnits::NSC, info.amount, false, BitcoinUnits::separatorNever));
+        ret += QString("?amount=%1").arg(BitcoinUnits::format(BitcoinUnits::PRJ, info.amount, false, BitcoinUnits::separatorNever));
         paramCount++;
     }
 
@@ -360,7 +360,7 @@ void openConfigfile()
 {
     boost::filesystem::path pathConfig = GetConfigFile();
 
-    /* Open nscoin.conf with the associated application */
+    /* Open projectcoin.conf with the associated application */
     if (boost::filesystem::exists(pathConfig))
         QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
 }
@@ -582,12 +582,12 @@ bool DHMSTableWidgetItem::operator<(QTableWidgetItem const& item) const
 #ifdef WIN32
 boost::filesystem::path static StartupShortcutPath()
 {
-    return GetSpecialFolderPath(CSIDL_STARTUP) / "nscoin.lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / "ProjectCoin.lnk";
 }
 
 bool GetStartOnSystemStartup()
 {
-    // check for nscoin.lnk
+    // check for ProjectCoin.lnk
     return boost::filesystem::exists(StartupShortcutPath());
 }
 
@@ -661,7 +661,7 @@ boost::filesystem::path static GetAutostartDir()
 
 boost::filesystem::path static GetAutostartFilePath()
 {
-    return GetAutostartDir() / "nscoin.desktop";
+    return GetAutostartDir() / "projectcoin.desktop";
 }
 
 bool GetStartOnSystemStartup()
@@ -697,10 +697,10 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         boost::filesystem::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out | std::ios_base::trunc);
         if (!optionFile.good())
             return false;
-        // Write a nscoin.desktop file to the autostart directory:
+        // Write a projectcoin.desktop file to the autostart directory:
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
-        optionFile << "Name=NSC wallet\n";
+        optionFile << "Name=ProjectCoin\n";
         optionFile << "Exec=" << pszExePath << " -min\n";
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
@@ -721,7 +721,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl)
 {
-    // loop through the list of startup items and try to find the nscoin app
+    // loop through the list of startup items and try to find the ProjectCoin app
     CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, NULL);
     for (int i = 0; i < CFArrayGetCount(listSnapshot); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(listSnapshot, i);
@@ -766,7 +766,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
     LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
 
     if (fAutoStart && !foundItem) {
-        // add nscoin app to startup item list
+        // add ProjectCoin app to startup item list
         LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, bitcoinAppUrl, NULL, NULL);
     } else if (!fAutoStart && foundItem) {
         // remove item
@@ -814,16 +814,7 @@ bool isExternal(QString theme)
     if (theme.isEmpty())
         return false;
 
-    if (theme.operator==("default"))
-        return false;
-
-//    return (theme.operator!=("default"));
-    return true;
-}
-
-QString getThemeImage(QString image)
-{
-    return image;
+    return (theme.operator!=("default"));
 }
 
 // Open CSS when configured
@@ -941,161 +932,3 @@ QString formatPingTime(double dPingTime)
 }
 
 } // namespace GUIUtil
-
-/****************************************************************************
-**                   FlowLayout Class implementation
-****************************************************************************/
-FlowLayout::FlowLayout(QWidget *parent, int margin, int hSpacing, int vSpacing)
-    : QLayout(parent), m_hSpace(hSpacing), m_vSpace(vSpacing)
-{
-    setContentsMargins(margin, margin, margin, margin);
-}
-
-FlowLayout::FlowLayout(int margin, int hSpacing, int vSpacing)
-    : m_hSpace(hSpacing), m_vSpace(vSpacing)
-{
-    setContentsMargins(margin, margin, margin, margin);
-}
-
-FlowLayout::~FlowLayout()
-{
-    QLayoutItem *item;
-    while ((item = takeAt(0)))
-        delete item;
-}
-
-void FlowLayout::addItem(QLayoutItem *item)
-{
-    itemList.append(item);
-}
-
-int FlowLayout::horizontalSpacing() const
-{
-    if (m_hSpace >= 0) {
-        return m_hSpace;
-    } else {
-        return smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
-    }
-}
-
-int FlowLayout::verticalSpacing() const
-{
-    if (m_vSpace >= 0) {
-        return m_vSpace;
-    } else {
-        return smartSpacing(QStyle::PM_LayoutVerticalSpacing);
-    }
-}
-
-int FlowLayout::count() const
-{
-    return itemList.size();
-}
-
-QLayoutItem *FlowLayout::itemAt(int index) const
-{
-    return itemList.value(index);
-}
-
-QLayoutItem *FlowLayout::takeAt(int index)
-{
-    if (index >= 0 && index < itemList.size())
-        return itemList.takeAt(index);
-    else
-        return 0;
-}
-
-Qt::Orientations FlowLayout::expandingDirections() const
-{
-    return 0;
-}
-
-bool FlowLayout::hasHeightForWidth() const
-{
-    return true;
-}
-
-int FlowLayout::heightForWidth(int width) const
-{
-    int height = doLayout(QRect(0, 0, width, 0), true);
-    return height;
-}
-
-void FlowLayout::setGeometry(const QRect &rect)
-{
-    QLayout::setGeometry(rect);
-    doLayout(rect, false);
-}
-
-QSize FlowLayout::sizeHint() const
-{
-    return minimumSize();
-}
-
-QSize FlowLayout::minimumSize() const
-{
-    QSize size;
-    QLayoutItem *item;
-    foreach (item, itemList)
-        size = size.expandedTo(item->minimumSize());
-
-    size += QSize(2*margin(), 2*margin());
-    return size;
-}
-
-int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
-{
-    int left, top, right, bottom;
-    getContentsMargins(&left, &top, &right, &bottom);
-    QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
-    int x = effectiveRect.x();
-    int y = effectiveRect.y();
-    int lineHeight = 0;
-
-    QLayoutItem *item;
-    foreach (item, itemList) {
-        QWidget *wid = item->widget();
-        int spaceX = horizontalSpacing();
-        if (spaceX == -1)
-            spaceX = wid->style()->layoutSpacing(
-                QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
-        int spaceY = verticalSpacing();
-        if (spaceY == -1)
-            spaceY = wid->style()->layoutSpacing(
-                QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
-        int nextX = x + item->sizeHint().width() + spaceX;
-        if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
-            x = effectiveRect.x();
-            y = y + lineHeight + spaceY;
-            nextX = x + item->sizeHint().width() + spaceX;
-            lineHeight = 0;
-        }
-
-        if (!testOnly)
-            item->setGeometry(QRect(QPoint(x, y), item->sizeHint()));
-
-        lineHeight = qMax(lineHeight, item->sizeHint().height());
-        QSizePolicy sizePolicy = wid->sizePolicy();
-        if (sizePolicy.horizontalPolicy() == QSizePolicy::Expanding) {
-            nextX = effectiveRect.x();
-            y = y + lineHeight + spaceY;
-            lineHeight = 0;
-        }
-
-        x = nextX;
-    }
-    return y + lineHeight - rect.y() + bottom;
-}
-
-int FlowLayout::smartSpacing(QStyle::PixelMetric pm) const
-{
-    QObject *parent = this->parent();
-    if (!parent) {
-        return -1;
-    } else if (parent->isWidgetType()) {
-        QWidget *pw = static_cast<QWidget *>(parent);
-        return pw->style()->pixelMetric(pm, 0, pw);
-    } else {
-        return static_cast<QLayout *>(parent)->spacing();
-    }
-}

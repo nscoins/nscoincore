@@ -14,8 +14,7 @@
 #include "sync.h"
 #include "util.h"
 
-#define MASTERNODES_DSEG_SECONDS (1 * 60 * 60)
-#define MASTERNODES_MNGET_SECONDS (1 * 1 * 60)
+#define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 
 using namespace std;
 
@@ -121,7 +120,7 @@ public:
     void Clear();
 
     unsigned CountEnabled(unsigned mnlevel = CMasternode::LevelValue::UNSPECIFIED, int protocolVersion = -1);
-    std::map<unsigned, unsigned> CountEnabledByLevels(int protocolVersion = -1);
+    std::map<unsigned, int> CountEnabledByLevels(int protocolVersion = -1);
 
     void CountNetworks(int protocolVersion, int& ipv4, int& ipv6, int& onion);
 

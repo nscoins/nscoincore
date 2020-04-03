@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1043,7 +1043,7 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
         // In either case, we need to get the destination address
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address)) {
-            LogPrint("tx", "CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
+            LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
                 this->GetHash().ToString());
             address = CNoDestination();
         }
@@ -1603,14 +1603,14 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
-        int64_t nTxTime = out.tx->GetTxTime();
+	 int64_t nTxTime = out.tx->GetTxTime();
 
         //check for min age
-        if (GetAdjustedTime() - nTxTime - nHashDrift < nStakeMinAge)
+        if (GetAdjustedTime() - nTxTime < nStakeMinAge)
             continue;
 
         //check that it is matured
-        if (out.nDepth < (out.tx->IsCoinStake() ? Dynamic_coinbase_maturity(chainActive.Tip()->nHeight) : 10))
+        if (out.nDepth < (out.tx->IsCoinStake() ? Params().COINBASE_MATURITY() : 10))
             continue;
 
         //add to our stake set
@@ -1773,13 +1773,13 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
         return (nValueRet >= nTargetValue);
     }
 
-    //if we're doing only denominated, we need to round up to the nearest .1 nscoin
+    //if we're doing only denominated, we need to round up to the nearest .1 ProjectCoin
     if (coin_type == ONLY_DENOMINATED) {
         // Make outputs by looping through denominations, from large to small
         BOOST_FOREACH (CAmount v, obfuScationDenominations) {
             BOOST_FOREACH (const COutput& out, vCoins) {
                 if (out.tx->vout[out.i].nValue == v                                               //make sure it's the denom we're looking for
-                    && nValueRet + out.tx->vout[out.i].nValue < nTargetValue + (0.1 * COIN) + 100 //round the amount up to .1 nscoin over
+                    && nValueRet + out.tx->vout[out.i].nValue < nTargetValue + (0.1 * COIN) + 100 //round the amount up to .1 ProjectCoin over
                     ) {
                     CTxIn vin = CTxIn(out.tx->GetHash(), out.i);
                     int rounds = GetInputObfuscationRounds(vin);
@@ -1841,12 +1841,12 @@ bool CWallet::SelectCoinsByDenominations(int nDenom, CAmount nValueMin, CAmount 
 
             // Function returns as follows:
             //
-            // bit 0 - 10000 nscoin+1 ( bit on if present )
-            // bit 1 - 1000 nscoin+1
-            // bit 2 - 100 nscoin+1
-            // bit 3 - 10 nscoin+1
-            // bit 4 - 1 nscoin+1
-            // bit 5 - .1 nscoin+1
+            // bit 0 - 10000 ProjectCoin+1 ( bit on if present )
+            // bit 1 - 1000 ProjectCoin+1
+            // bit 2 - 100 ProjectCoin+1
+            // bit 3 - 10 ProjectCoin+1
+            // bit 4 - 1 ProjectCoin+1
+            // bit 5 - .1 ProjectCoin+1
 
             CTxIn vin = CTxIn(out.tx->GetHash(), out.i);
 
@@ -2176,9 +2176,9 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     if (coin_type == ALL_COINS) {
                         strFailReason = _("Insufficient funds.");
                     } else if (coin_type == ONLY_NOTDEPOSITIFMN) {
-                        strFailReason = _("Unable to locate enough funds for this transaction that are not equal MN collateral NSC.");
+                        strFailReason = _("Unable to locate enough funds for this transaction that are not equal MN collateral ProjectCoin.");
                     } else if (coin_type == ONLY_NONDENOMINATED_NOTDEPOSITIFMN) {
-                        strFailReason = _("Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal MN collateral NSC.");
+                        strFailReason = _("Unable to locate enough Obfuscation non-denominated funds for this transaction that are not equal MN collateral ProjectCoin.");
                     } else {
                         strFailReason = _("Unable to locate enough Obfuscation denominated funds for this transaction.");
                         strFailReason += " " + _("Obfuscation uses exact denominated amounts to send funds, you might simply need to anonymize some more coins.");
@@ -2216,7 +2216,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 if (nChange > 0) {
                     // Fill a vout to ourself
                     // TODO: pass in scriptChange instead of reservekey so
-                    // change transaction isn't always pay-to-nscoin-address
+                    // change transaction isn't always pay-to-projectcoin-address
                     CScript scriptChange;
 
                     // coin control: send change to custom address
@@ -2481,13 +2481,6 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
 {
     {
         LOCK2(cs_main, cs_wallet);
-
-        if (!wtxNew.AcceptToMemoryPool(false)) {
-            // This must not fail. The transaction has already been signed and recorded.
-            LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
-            return false;
-        }
-
         LogPrintf("CommitTransaction:\n%s", wtxNew.ToString());
         {
             // This is only to keep the database open to defeat the auto-flush for the
@@ -2521,6 +2514,11 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std:
         mapRequestCount[wtxNew.GetHash()] = 0;
 
         // Broadcast
+        if (!wtxNew.AcceptToMemoryPool(false)) {
+            // This must not fail. The transaction has already been signed and recorded.
+            LogPrintf("CommitTransaction() : Error: Transaction not valid\n");
+            return false;
+        }
         wtxNew.RelayWalletTransaction(strCommand);
     }
     return true;
@@ -3316,14 +3314,8 @@ void CWallet::AutoCombineDust()
         CCoinControl* coinControl = new CCoinControl();
         CAmount nTotalRewardsValue = 0;
         BOOST_FOREACH (const COutput& out, vCoins) {
-            int txDepth = out.tx->GetDepthInMainChain();
-
             //no coins should get this far if they dont have proper maturity, this is double checking
-            if (out.tx->IsCoinStake() && txDepth < COINBASE_MATURITY + 1)
-                continue;
-
-            // skip inputs over autocombine confirmations limit
-            if (nAutoCombineLimit > 0 && txDepth > nAutoCombineLimit)
+            if (out.tx->IsCoinStake() && out.tx->GetDepthInMainChain() < COINBASE_MATURITY + 1)
                 continue;
 
             if (out.Value() > nAutoCombineThreshold * COIN)
@@ -3333,17 +3325,10 @@ void CWallet::AutoCombineDust()
             coinControl->Select(outpt);
             vRewardCoins.push_back(out);
             nTotalRewardsValue += out.Value();
-            //if threshold taken stop combine inputs
-            if (nTotalRewardsValue >= nAutoCombineThreshold * COIN)
-                break;
         }
 
         //if no inputs found then return
         if (!coinControl->HasSelected())
-            continue;
-
-        //if inputs values lower threshold return, prevent small tx spam
-        if (nTotalRewardsValue < nAutoCombineThreshold * COIN)
             continue;
 
         //we cannot combine one coin with itself
@@ -3596,7 +3581,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (Dynamic_coinbase_maturity(chainActive.Height()) + 1) - GetDepthInMainChain());
+    return max(0, (Params().COINBASE_MATURITY() + 1) - GetDepthInMainChain());
 }
 
 

@@ -188,7 +188,6 @@ public:
 
 struct CMutableTransaction;
 
-typedef std::string CBlob;
 /** The basic transaction that is broadcasted on the network and contained in
  * blocks.  A transaction can contain multiple inputs and outputs.
  */
@@ -212,7 +211,6 @@ public:
     std::vector<CTxOut> vout;
     const uint32_t nLockTime;
     //const unsigned int nTime;
-    CBlob blob;
 
     /** Construct a CTransaction that qualifies as IsNull() */
     CTransaction();
@@ -231,7 +229,6 @@ public:
         READWRITE(*const_cast<std::vector<CTxIn>*>(&vin));
         READWRITE(*const_cast<std::vector<CTxOut>*>(&vout));
         READWRITE(*const_cast<uint32_t*>(&nLockTime));
-        READWRITE(*const_cast<std::string*>(&blob));
         if (ser_action.ForRead())
             UpdateHash();
     }
@@ -290,7 +287,6 @@ struct CMutableTransaction
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     uint32_t nLockTime;
-    CBlob blob;
 
     CMutableTransaction();
     CMutableTransaction(const CTransaction& tx);
@@ -304,7 +300,6 @@ struct CMutableTransaction
         READWRITE(vin);
         READWRITE(vout);
         READWRITE(nLockTime);
-        READWRITE(blob);
     }
 
     /** Compute the hash of this CMutableTransaction. This is computed on the

@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -136,6 +136,7 @@ void WalletFrame::gotoToolsPage()
         i.value()->gotoToolsPage();
 }
 
+
 void WalletFrame::gotoToolsPageTab(enum ToolsPage::TabTypes page)
 {
    QMap<QString, WalletView*>::const_iterator i;
@@ -143,6 +144,13 @@ void WalletFrame::gotoToolsPageTab(enum ToolsPage::TabTypes page)
         i.value()->gotoToolsPageTab(page);
 }
 
+
+void WalletFrame::gotoBlockExplorerPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoBlockExplorerPage();
+}
 
 void WalletFrame::gotoReceiveCoinsPage()
 {

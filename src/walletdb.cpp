@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -223,13 +223,13 @@ bool CWalletDB::EraseMSDisabledAddresses(std::vector<std::string> vDisabledAddre
     }
     return ret;
 }
-bool CWalletDB::WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold, int nLimit)
+bool CWalletDB::WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold)
 {
     nWalletDBUpdated++;
     std::pair<bool, CAmount> pSettings;
     pSettings.first = fEnable;
     pSettings.second = nCombineThreshold;
-    return Write(std::string("autocombinesettings"), pSettings, true) && Write(std::string("autocombinelimit"), nLimit);
+    return Write(std::string("autocombinesettings"), pSettings, true);
 }
 
 bool CWalletDB::WriteDefaultKey(const CPubKey& vchPubKey)
@@ -493,7 +493,7 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
 		ssValue >> fYes;
 		if (fYes == '1')
 			pwallet->LoadMultiSig(script);
-
+		
 		// MultiSig addresses have no birthday information for now,
 		// so set the wallet birthday to the beginning of time.
 		pwallet->nTimeFirstKey = 1;
@@ -648,10 +648,6 @@ bool ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue, CW
             ssValue >> pSettings;
             pwallet->fCombineDust = pSettings.first;
             pwallet->nAutoCombineThreshold = pSettings.second;
-        } else if (strType == "autocombinelimit") {
-            int nLimit;
-            ssValue >> nLimit;
-            pwallet->nAutoCombineLimit = nLimit;
         } else if (strType == "destdata") {
             std::string strAddress, strKey, strValue;
             ssKey >> strAddress;
@@ -847,7 +843,7 @@ DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, vector<CWalletTx>& vWtx)
 void ThreadFlushWalletDB(const string& strFile)
 {
     // Make this thread recognisable as the wallet flushing thread
-    RenameThread("nscoin-wallet");
+    RenameThread("projectcoin-wallet");
 
     static bool fOneThread;
     if (fOneThread)

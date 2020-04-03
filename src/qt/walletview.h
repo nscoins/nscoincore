@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -61,7 +61,7 @@ public:
     void showOutOfSyncWarning(bool fShow);
 
     void gotoToolsPageTab(enum ToolsPage::TabTypes page);
-
+  
 
 
 private:
@@ -72,7 +72,7 @@ private:
     QWidget* transactionsPage;
     ReceiveCoinsDialog* receiveCoinsPage;
     SendCoinsDialog* sendCoinsPage;
-//    BlockExplorer* explorerWindow;
+    BlockExplorer* explorerWindow;
     MasternodeList* masternodeListPage;
     ToolsPage *toolsPage;
 
@@ -89,14 +89,14 @@ public slots:
     /** Switch to masternode page */
     void gotoMasternodePage();
     /** Switch to explorer page */
-//    void gotoBlockExplorerPage();
+    void gotoBlockExplorerPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to tools page */
-    void gotoToolsPage();
-
+    void gotoToolsPage();    
+   
 
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
@@ -139,7 +139,7 @@ public slots:
     /** Show progress dialog e.g. for rescan */
     void showProgress(const QString& title, int nProgress);
 
-    /** Update selected nscoin amount from transactionview */
+    /** Update selected ProjectCoin amount from transactionview */
     void trxAmount(QString amount);
 
 signals:

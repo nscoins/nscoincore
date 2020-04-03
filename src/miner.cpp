@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -31,7 +31,7 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// nscoinMiner
+// ProjectCoinMiner
 //
 
 //
@@ -106,7 +106,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     txNew.vout.resize(1);
     txNew.vout[0].SetEmpty();
 
-    //LogPrintf("CreateNewBlock() : chainActive.Height() = %s \n", chainActive.Height());
+    LogPrintf("CreateNewBlock() : chainActive.Height() = %s \n", chainActive.Height());
     if (chainActive.Height() >= Params().LAST_POW_BLOCK()) {
       txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 
@@ -338,8 +338,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         CAmount block_value = GetBlockValue(nHeight - 1);
-        if (nHeight == 1)
-            txNew.blob = "Generate Premine Tx";
         // Compute final transaction.
         if (!fProofOfStake) {
 
@@ -369,7 +367,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
-        //LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+        LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         // Fill in header
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
@@ -380,7 +378,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
         CValidationState state;
-        //LogPrintf("CreateNewBlock() if CValidationState: chainActive.Height() = %s \n", chainActive.Height());
+        LogPrintf("CreateNewBlock() if CValidationState: chainActive.Height() = %s \n", chainActive.Height());
         if (chainActive.Height() < Params().LAST_POW_BLOCK()) {
           if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
               LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
@@ -438,7 +436,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("nscoinMiner : generated block is stale");
+            return error("ProjectCoinMiner : generated block is stale");
     }
 
     // Remove key from key pool
@@ -453,7 +451,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock))
-        return error("nscoinMiner : ProcessNewBlock, block not accepted");
+        return error("ProjectCoinMiner : ProcessNewBlock, block not accepted");
 
     for (CNode* node : vNodes) {
         node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
@@ -468,9 +466,9 @@ bool fGenerateBitcoins = false;
 
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
-    LogPrintf("nscoinMiner started\n");
+    LogPrintf("ProjectCoinMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("nscoin-miner");
+    RenameThread("projectcoin-miner");
 
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
@@ -492,8 +490,9 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 MilliSleep(5000);
                 continue;
             }
-                                                         /*                                             */
-            while (chainActive.Tip()->nTime < 1471482000 || vNodes.size() <= 3 || !masternodeSync.IsSynced() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance()) {
+
+            //todo: check nTime < GMT: Thursday, 18 August 2016 г., 01:00:00
+            while (chainActive.Tip()->nTime < 1471482000 || vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || !masternodeSync.IsSynced()) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
                 if (!fGenerateBitcoins && !fProofOfStake)
@@ -542,7 +541,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             continue;
         }
 
-        //LogPrintf("Running nscoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(), ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+        LogPrintf("Running ProjectCoinMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+            ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
         //
         // Search

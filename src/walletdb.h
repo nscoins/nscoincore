@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
 // Copyright (c) 2016-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -115,7 +115,7 @@ public:
     bool WriteMSettings(bool fMultiSendStake, bool fMultiSendMasternode, int nLastMultiSendHeight);
     bool WriteMSDisabledAddresses(std::vector<std::string> vDisabledAddresses);
     bool EraseMSDisabledAddresses(std::vector<std::string> vDisabledAddresses);
-    bool WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold, int nLimit = 0);
+    bool WriteAutoCombineSettings(bool fEnable, CAmount nCombineThreshold);
 
     bool WriteDefaultKey(const CPubKey& vchPubKey);
 

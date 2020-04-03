@@ -1,12 +1,12 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/nscoin-config.h"
+#include "config/projectcoin-config.h"
 #endif
 
 #include "optionsmodel.h"
@@ -62,7 +62,7 @@ void OptionsModel::Init()
 
     // Display
     if (!settings.contains("nDisplayUnit"))
-        settings.setValue("nDisplayUnit", BitcoinUnits::NSC);
+        settings.setValue("nDisplayUnit", BitcoinUnits::PRJ);
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
     if (!settings.contains("strThirdPartyTxUrls"))
@@ -76,11 +76,11 @@ void OptionsModel::Init()
     if (!settings.contains("nObfuscationRounds"))
         settings.setValue("nObfuscationRounds", 2);
 
-    if (!settings.contains("nAnonymizePhcAmount"))
-        settings.setValue("nAnonymizePhcAmount", 1000);
+    if (!settings.contains("nAnonymizePrjAmount"))
+        settings.setValue("nAnonymizePrjAmount", 1000);
 
     nObfuscationRounds = settings.value("nObfuscationRounds").toLongLong();
-    nAnonymizePhcAmount = settings.value("nAnonymizePhcAmount").toLongLong();
+    nAnonymizePrjAmount = settings.value("nAnonymizePrjAmount").toLongLong();
 
     if (!settings.contains("fShowMasternodesTab"))
         settings.setValue("fShowMasternodesTab", masternodeConfig.getCount());
@@ -111,14 +111,6 @@ void OptionsModel::Init()
     if (!SoftSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
         addOverriddenOption("-spendzeroconfchange");
 #endif
-    if (!settings.contains("nStakeSplitThreshold"))
-        settings.setValue("nStakeSplitThreshold", 200);
-    if (!settings.contains("nAutoCombineRewards"))
-        settings.setValue("nAutoCombineRewards", 500);
-    if (!settings.contains("bAutoCombine"))
-        settings.setValue("bAutoCombine", false);
-    if (!settings.contains("nAutoCombineLimit"))
-        settings.setValue("nAutoCombineLimit", 0);
 
     // Network
     if (!settings.contains("fUseUPnP"))
@@ -146,8 +138,6 @@ void OptionsModel::Init()
         settings.setValue("digits", "2");
     if (!settings.contains("theme"))
         settings.setValue("theme", "");
-    if (!settings.contains("toolbarPosition"))
-        settings.setValue("toolbarPosition", "Left");
     if (!settings.contains("fCSSexternal"))
         settings.setValue("fCSSexternal", false);
     if (!settings.contains("language"))
@@ -157,8 +147,8 @@ void OptionsModel::Init()
 
     if (settings.contains("nObfuscationRounds"))
         SoftSetArg("-obfuscationrounds", settings.value("nObfuscationRounds").toString().toStdString());
-    if (settings.contains("nAnonymizePhcAmount"))
-        SoftSetArg("-anonymizenscoinamount", settings.value("nAnonymizePhcAmount").toString().toStdString());
+    if (settings.contains("nAnonymizePrjAmount"))
+        SoftSetArg("-anonymizeprojectcoinamount", settings.value("nAnonymizePrjAmount").toString().toStdString());
 
     language = settings.value("language").toString();
 }
@@ -169,7 +159,7 @@ void OptionsModel::Reset()
 
     // Remove all entries from our QSettings object
     settings.clear();
-    resetSettings = true; // Needed in nscoin.cpp during shotdown to also remove the window positions
+    resetSettings = true; // Needed in projectcoin.cpp during shotdown to also remove the window positions
 
     // default setting for OptionsModel::StartAtStartup - disabled
     if (GUIUtil::GetStartOnSystemStartup())
@@ -219,25 +209,7 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             return settings.value("bSpendZeroConfChange");
         case ShowMasternodesTab:
             return settings.value("fShowMasternodesTab");
-
-        case StakeSplitThreshold:
-            if (pwalletMain)
-                return QVariant((int)pwalletMain->nStakeSplitThreshold);
-            return settings.value("nStakeSplitThreshold");
-        case AutoCombineRewards:
-            if (pwalletMain)
-                return QVariant((int)pwalletMain->nAutoCombineThreshold);
-            return settings.value("nAutoCombineRewards");
-        case AutoCombine:
-            if (pwalletMain)
-                return QVariant((bool)pwalletMain->fCombineDust);
-            return settings.value("bAutoCombine");
-        case AutoCombineLimit:
-            if (pwalletMain)
-                return QVariant((int)pwalletMain->nAutoCombineLimit);
-            return settings.value("nAutoCombineLimit");
 #endif
-
         case DisplayUnit:
             return nDisplayUnit;
         case ThirdPartyTxUrls:
@@ -246,8 +218,6 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             return settings.value("digits");
         case Theme:
             return settings.value("theme");
-        case ToolbarPosition:
-            return settings.value("toolbarPosition");
         case Language:
             return settings.value("language");
         case CoinControlFeatures:
@@ -258,8 +228,8 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             return settings.value("nThreadsScriptVerif");
         case ObfuscationRounds:
             return QVariant(nObfuscationRounds);
-        case AnonymizePhcAmount:
-            return QVariant(nAnonymizePhcAmount);
+        case AnonymizePrjAmount:
+            return QVariant(nAnonymizePrjAmount);
         case Listen:
             return settings.value("fListen");
         default:
@@ -335,22 +305,6 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
             }
             break;
 #endif
-
-        case StakeSplitThreshold:
-             settings.setValue("nStakeSplitThreshold", value.toInt());
-             break;
-        case AutoCombineRewards:
-            settings.setValue("nAutoCombineRewards", value.toInt());
-            break;
-        case AutoCombine:
-            if (settings.value("bAutoCombine") != value) {
-                settings.setValue("bAutoCombine", value);
-            }
-            break;
-        case AutoCombineLimit:
-            settings.setValue("nAutoCombineLimit", value.toInt());
-            break;
-
         case DisplayUnit:
             setDisplayUnit(value);
             break;
@@ -373,12 +327,6 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
                 setRestartRequired(true);
             }
             break;
-        case ToolbarPosition:
-            if (settings.value("toolbarPosition") != value) {
-                settings.setValue("toolbarPosition", value);
-                setRestartRequired(true);
-            }
-            break;
         case Language:
             if (settings.value("language") != value) {
                 settings.setValue("language", value);
@@ -390,10 +338,10 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
             settings.setValue("nObfuscationRounds", nObfuscationRounds);
             emit obfuscationRoundsChanged(nObfuscationRounds);
             break;
-        case AnonymizePhcAmount:
-            nAnonymizePhcAmount = value.toInt();
-            settings.setValue("nAnonymizePhcAmount", nAnonymizePhcAmount);
-            emit anonymizePhcAmountChanged(nAnonymizePhcAmount);
+        case AnonymizePrjAmount:
+            nAnonymizePrjAmount = value.toInt();
+            settings.setValue("nAnonymizePrjAmount", nAnonymizePrjAmount);
+            emit anonymizePrjAmountChanged(nAnonymizePrjAmount);
             break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();

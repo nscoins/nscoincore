@@ -9,8 +9,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between nscoin-cli and nscoind)
- * of a given instance of the nscoin system.
+ * CBaseChainParams defines the base parameters (shared between projectcoin-cli and projectcoind)
+ * of a given instance of the ProjectCoin system.
  */
 class CBaseChainParams
 {

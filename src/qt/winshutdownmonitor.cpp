@@ -60,7 +60,7 @@ void WinShutdownMonitor::registerShutdownBlockReason(const QString& strReason, c
     }
 
     if (shutdownBRCreate(mainWinId, strReason.toStdWString().c_str()))
-        qDebug() << "registerShutdownBlockReason: Successfully registered: " + strReason;
+        qWarning() << "registerShutdownBlockReason: Successfully registered: " + strReason;
     else
         qWarning() << "registerShutdownBlockReason: Failed to register: " + strReason;
 }

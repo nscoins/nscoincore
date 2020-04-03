@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The Bulwark developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +15,7 @@
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 
-#include "univalue/include/univalue.h"
+#include <univalue.h>
 
 #include <boost/tokenizer.hpp>
 #include <fstream>
@@ -46,7 +46,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
 
-    // Parse nscoin address
+    // Parse ProjectCoin address
     CScript scriptPubKey = GetScriptForDestination(address);
 
     // Create and send the transaction
@@ -66,8 +66,8 @@ UniValue obfuscation(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() == 0)
         throw runtime_error(
-            "obfuscation <nscoinaddress> <amount>\n"
-            "nscoinaddress, reset, or auto (AutoDenominate)"
+            "obfuscation <projectcoinaddress> <amount>\n"
+            "projectcoinaddress, reset, or auto (AutoDenominate)"
             "<amount> is a real and will be rounded to the next 0.1" +
             HelpRequiringPassphrase());
 
@@ -88,14 +88,14 @@ UniValue obfuscation(const UniValue& params, bool fHelp)
 
     if (params.size() != 2)
         throw runtime_error(
-            "obfuscation <nscoinaddress> <amount>\n"
-            "nscoinaddress, denominate, or auto (AutoDenominate)"
+            "obfuscation <projectcoinaddress> <amount>\n"
+            "projectcoinaddress, denominate, or auto (AutoDenominate)"
             "<amount> is a real and will be rounded to the next 0.1" +
             HelpRequiringPassphrase());
 
     CBitcoinAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid NSC address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid ProjectCoin address");
 
     // Amount
     CAmount nAmount = AmountFromValue(params[1]);
@@ -120,7 +120,7 @@ UniValue getpoolinfo(const UniValue& params, bool fHelp)
 
             "\nResult:\n"
             "{\n"
-            "  \"current\": \"addr\",  (string) NSC address of current masternode\n"
+            "  \"current\": \"addr\",    (string) ProjectCoin address of current masternode\n"
             "  \"state\": xxxx,        (string) unknown\n"
             "  \"entries\": xxxx,      (numeric) Number of entries\n"
             "  \"accepted\": xxxx,     (numeric) Number of entries accepted\n"
@@ -167,7 +167,7 @@ UniValue masternode(const UniValue& params, bool fHelp)
             "  debug        - Print masternode status\n"
             "  genkey       - Generate new masternodeprivkey\n"
             "  outputs      - Print masternode compatible outputs\n"
-            "  start        - Start masternode configured in nscoin.conf\n"
+            "  start        - Start masternode configured in projectcoin.conf\n"
             "  start-alias  - Start single masternode by assigned alias configured in masternode.conf\n"
             "  start-<mode> - Start masternodes configured in masternode.conf (<mode>: 'all', 'missing', 'disabled')\n"
             "  status       - Print masternode status information\n"
@@ -303,7 +303,7 @@ UniValue listmasternodes(const UniValue& params, bool fHelp)
             "    \"txhash\": \"hash\",  (string) Collateral transaction hash\n"
             "    \"outidx\": n,         (numeric) Collateral transaction output index\n"
             "    \"status\": s,         (string) Status (ENABLED/EXPIRED/REMOVE/etc)\n"
-            "    \"addr\": \"addr\",    (string) Masternode nscoin address\n"
+            "    \"addr\": \"addr\",    (string) Masternode ProjectCoin address\n"
             "    \"version\": v,        (numeric) Masternode protocol version\n"
             "    \"lastseen\": ttt,     (numeric) The time in seconds since epoch (Jan 1 1970 GMT) of the last seen\n"
             "    \"activetime\": ttt,   (numeric) The time in seconds since epoch (Jan 1 1970 GMT) masternode has been active\n"
@@ -354,6 +354,7 @@ UniValue listmasternodes(const UniValue& params, bool fHelp)
             obj.push_back(Pair("lastseen", (int64_t)mn->lastPing.sigTime));
             obj.push_back(Pair("activetime", (int64_t)(mn->lastPing.sigTime - mn->sigTime)));
             obj.push_back(Pair("lastpaid", (int64_t)mn->GetLastPaid()));
+            obj.push_back(Pair("netip", mn->addr.ToString()));
 
             ret.push_back(obj);
         }
@@ -373,7 +374,7 @@ UniValue masternodeconnect(const UniValue& params, bool fHelp)
             "1. \"address\"     (string, required) IP or net address to connect to\n"
 
             "\nExamples:\n" +
-            HelpExampleCli("masternodeconnect", "\"192.168.0.6:20222\"") + HelpExampleRpc("masternodeconnect", "\"192.168.0.6:20222\""));
+            HelpExampleCli("masternodeconnect", "\"192.168.0.6:85111\"") + HelpExampleRpc("masternodeconnect", "\"192.168.0.6:85111\""));
 
     std::string strAddress = params[0].get_str();
 
@@ -506,39 +507,33 @@ UniValue masternodecurrent (const UniValue& params, bool fHelp)
     if (fHelp || (params.size() != 0))
         throw runtime_error(
             "masternodecurrent\n"
-            "\nGet current masternode winners\n"
+            "\nGet current masternode winner\n"
 
             "\nResult:\n"
-            "[\n"
-            "  {\n"
-            "    \"level\": xxxx,         (numeric) MN level\n"
-            "    \"protocol\": xxxx,      (numeric) Protocol version\n"
-            "    \"txhash\": \"xxxx\",    (string)  Collateral transaction hash\n"
-            "    \"pubkey\": \"xxxx\",    (string)  MN Public key\n"
-            "    \"lastseen\": xxx,       (numeric) Time since epoch of last seen\n"
-            "    \"activeseconds\": xxx,  (numeric) Seconds MN has been active\n"
-            "  },\n"
-            "  ...\n"
-            "]\n"
+            "{\n"
+            "  \"protocol\": xxxx,        (numeric) Protocol version\n"
+            "  \"txhash\": \"xxxx\",      (string) Collateral transaction hash\n"
+            "  \"pubkey\": \"xxxx\",      (string) MN Public key\n"
+            "  \"lastseen\": xxx,       (numeric) Time since epoch of last seen\n"
+            "  \"activeseconds\": xxx,  (numeric) Seconds MN has been active\n"
+            "}\n"
             "\nExamples:\n" +
             HelpExampleCli("masternodecurrent", "") + HelpExampleRpc("masternodecurrent", ""));
 
-    UniValue result{UniValue::VARR};
-    for(unsigned l = CMasternode::LevelValue::MIN; l <= CMasternode::LevelValue::MAX; ++l) {
-        CMasternode* winner = mnodeman.GetCurrentMasterNode(l, 1);
-        if(!winner)
-            continue;
-
+    //fixme: GetCurrentMasterNode add MN level
+    CMasternode* winner = mnodeman.GetCurrentMasterNode(CMasternode::LevelValue::UNSPECIFIED, 1);
+    if (winner) {
         UniValue obj(UniValue::VOBJ);
-        obj.push_back(Pair("level", winner->Level()));
+
         obj.push_back(Pair("protocol", (int64_t)winner->protocolVersion));
         obj.push_back(Pair("txhash", winner->vin.prevout.hash.ToString()));
         obj.push_back(Pair("pubkey", CBitcoinAddress(winner->pubKeyCollateralAddress.GetID()).ToString()));
         obj.push_back(Pair("lastseen", (winner->lastPing == CMasternodePing()) ? winner->sigTime : (int64_t)winner->lastPing.sigTime));
         obj.push_back(Pair("activeseconds", (winner->lastPing == CMasternodePing()) ? 0 : (int64_t)(winner->lastPing.sigTime - winner->sigTime)));
-        result.push_back(obj);
+        return obj;
     }
-    return result;
+
+    throw runtime_error("unknown");
 }
 
 UniValue masternodedebug (const UniValue& params, bool fHelp)
@@ -865,7 +860,7 @@ UniValue getmasternodestatus (const UniValue& params, bool fHelp)
             "  \"txhash\": \"xxxx\",      (string) Collateral transaction hash\n"
             "  \"outputidx\": n,        (numeric) Collateral transaction output index number\n"
             "  \"netaddr\": \"xxxx\",     (string) Masternode network address\n"
-            "  \"addr\": \"xxxx\",        (string) nscoin address for masternode payments\n"
+            "  \"addr\": \"xxxx\",        (string) ProjectCoin address for masternode payments\n"
             "  \"status\": \"xxxx\",      (string) Masternode status\n"
             "  \"message\": \"xxxx\"      (string) Masternode status message\n"
             "}\n"
@@ -907,7 +902,7 @@ UniValue getmasternodewinners(const UniValue& params, bool fHelp)
             "  {\n"
             "    \"nHeight\": n,           (numeric) block height\n"
             "    \"winner\": {\n"
-            "      \"address\": \"xxxx\",  (string)  nscoin MN Address\n"
+            "      \"address\": \"xxxx\",  (string)  ProjectCoin MN Address\n"
             "      \"level\": n,           (numeric) Masternode level\n"
             "      \"nVotes\": n,          (numeric) Number of votes for winner\n"
             "    }\n"
@@ -921,7 +916,7 @@ UniValue getmasternodewinners(const UniValue& params, bool fHelp)
             "    \"nHeight\": n,            (numeric) block height\n"
             "    \"winner\": [\n"
             "      {\n"
-            "        \"address\": \"xxxx\", (string)  nscoin MN Address\n"
+            "        \"address\": \"xxxx\", (string)  ProjectCoin MN Address\n"
             "        \"level\": n,          (numeric) Masternode level\n"
             "        \"nVotes\": n,         (numeric) Number of votes for winner\n"
             "      }\n"
@@ -941,7 +936,7 @@ UniValue getmasternodewinners(const UniValue& params, bool fHelp)
         nHeight = pindex->nHeight;
     }
 
-    int nLast = 5;
+    int nLast = 10;
     std::string strFilter = "";
 
     if(params.size() >= 1)
@@ -952,7 +947,7 @@ UniValue getmasternodewinners(const UniValue& params, bool fHelp)
 
     UniValue ret(UniValue::VARR);
 
-    for(int i = nHeight - nLast; i < nHeight + 15; ++i) {
+    for(int i = nHeight - nLast; i < nHeight + 20; ++i) {
         UniValue obj(UniValue::VOBJ);
         obj.push_back(Pair("nHeight", i));
 

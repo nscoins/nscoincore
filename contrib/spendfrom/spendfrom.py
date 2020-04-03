@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 #
-# Use the raw transactions API to spend NsCoins received on particular addresses,
+# Use the raw transactions API to spend ProjectCoins received on particular addresses,
 # and send any change back to that same address.
 #
 # Example usage:
 #  spendfrom.py  # Lists available funds
 #  spendfrom.py --from=ADDRESS --to=ADDRESS --amount=11.00
 #
-# Assumes it will talk to a nscoind or nscoin-Qt running
+# Assumes it will talk to a projectcoind or projectcoin-Qt running
 # on localhost.
 #
 # Depends on jsonrpc
@@ -33,15 +33,15 @@ def check_json_precision():
         raise RuntimeError("JSON encode/decode loses precision")
 
 def determine_db_dir():
-    """Return the default location of the nscoin data directory"""
+    """Return the default location of the projectcoin data directory"""
     if platform.system() == "Darwin":
-        return os.path.expanduser("~/Library/Application Support/NsCoin/")
+        return os.path.expanduser("~/Library/Application Support/ProjectCoin/")
     elif platform.system() == "Windows":
-        return os.path.join(os.environ['APPDATA'], "NsCoin")
-    return os.path.expanduser("~/.nscoin")
+        return os.path.join(os.environ['APPDATA'], "ProjectCoin")
+    return os.path.expanduser("~/.projectcoin")
 
 def read_bitcoin_config(dbdir):
-    """Read the nscoin.conf file from dbdir, returns dictionary of settings"""
+    """Read the projectcoin.conf file from dbdir, returns dictionary of settings"""
     from ConfigParser import SafeConfigParser
 
     class FakeSecHead(object):
@@ -59,11 +59,11 @@ def read_bitcoin_config(dbdir):
                 return s
 
     config_parser = SafeConfigParser()
-    config_parser.readfp(FakeSecHead(open(os.path.join(dbdir, "nscoin.conf"))))
+    config_parser.readfp(FakeSecHead(open(os.path.join(dbdir, "projectcoin.conf"))))
     return dict(config_parser.items("all"))
 
 def connect_JSON(config):
-    """Connect to a nscoin JSON-RPC server"""
+    """Connect to a projectcoin JSON-RPC server"""
     testnet = config.get('testnet', '0')
     testnet = (int(testnet) > 0)  # 0/1 in config file, convert to True/False
     if not 'rpcport' in config:
@@ -72,7 +72,7 @@ def connect_JSON(config):
     try:
         result = ServiceProxy(connect)
         # ServiceProxy is lazy-connect, so send an RPC command mostly to catch connection errors,
-        # but also make sure the nscoind we're talking to is/isn't testnet:
+        # but also make sure the projectcoind we're talking to is/isn't testnet:
         if result.getmininginfo()['testnet'] != testnet:
             sys.stderr.write("RPC server at "+connect+" testnet setting mismatch\n")
             sys.exit(1)
@@ -81,36 +81,36 @@ def connect_JSON(config):
         sys.stderr.write("Error connecting to RPC server at "+connect+"\n")
         sys.exit(1)
 
-def unlock_wallet(nscoind):
-    info = nscoind.getinfo()
+def unlock_wallet(projectcoind):
+    info = projectcoind.getinfo()
     if 'unlocked_until' not in info:
         return True # wallet is not encrypted
     t = int(info['unlocked_until'])
     if t <= time.time():
         try:
             passphrase = getpass.getpass("Wallet is locked; enter passphrase: ")
-            nscoind.walletpassphrase(passphrase, 5)
+            projectcoind.walletpassphrase(passphrase, 5)
         except:
             sys.stderr.write("Wrong passphrase\n")
 
-    info = nscoind.getinfo()
+    info = projectcoind.getinfo()
     return int(info['unlocked_until']) > time.time()
 
-def list_available(nscoind):
+def list_available(projectcoind):
     address_summary = dict()
 
     address_to_account = dict()
-    for info in nscoind.listreceivedbyaddress(0):
+    for info in projectcoind.listreceivedbyaddress(0):
         address_to_account[info["address"]] = info["account"]
 
-    unspent = nscoind.listunspent(0)
+    unspent = projectcoind.listunspent(0)
     for output in unspent:
         # listunspent doesn't give addresses, so:
-        rawtx = nscoind.getrawtransaction(output['txid'], 1)
+        rawtx = projectcoind.getrawtransaction(output['txid'], 1)
         vout = rawtx["vout"][output['vout']]
         pk = vout["scriptPubKey"]
 
-        # This code only deals with ordinary pay-to-nscoin-address
+        # This code only deals with ordinary pay-to-projectcoin-address
         # or pay-to-script-hash outputs right now; anything exotic is ignored.
         if pk["type"] != "pubkeyhash" and pk["type"] != "scripthash":
             continue
@@ -139,8 +139,8 @@ def select_coins(needed, inputs):
         n += 1
     return (outputs, have-needed)
 
-def create_tx(nscoind, fromaddresses, toaddress, amount, fee):
-    all_coins = list_available(nscoind)
+def create_tx(projectcoind, fromaddresses, toaddress, amount, fee):
+    all_coins = list_available(projectcoind)
 
     total_available = Decimal("0.0")
     needed = amount+fee
@@ -159,7 +159,7 @@ def create_tx(nscoind, fromaddresses, toaddress, amount, fee):
     # Note:
     # Python's json/jsonrpc modules have inconsistent support for Decimal numbers.
     # Instead of wrestling with getting json.dumps() (used by jsonrpc) to encode
-    # Decimals, I'm casting amounts to float before sending them to nscoind.
+    # Decimals, I'm casting amounts to float before sending them to projectcoind.
     #
     outputs = { toaddress : float(amount) }
     (inputs, change_amount) = select_coins(needed, potential_inputs)
@@ -170,8 +170,8 @@ def create_tx(nscoind, fromaddresses, toaddress, amount, fee):
         else:
             outputs[change_address] = float(change_amount)
 
-    rawtx = nscoind.createrawtransaction(inputs, outputs)
-    signed_rawtx = nscoind.signrawtransaction(rawtx)
+    rawtx = projectcoind.createrawtransaction(inputs, outputs)
+    signed_rawtx = projectcoind.signrawtransaction(rawtx)
     if not signed_rawtx["complete"]:
         sys.stderr.write("signrawtransaction failed\n")
         sys.exit(1)
@@ -179,10 +179,10 @@ def create_tx(nscoind, fromaddresses, toaddress, amount, fee):
 
     return txdata
 
-def compute_amount_in(nscoind, txinfo):
+def compute_amount_in(projectcoind, txinfo):
     result = Decimal("0.0")
     for vin in txinfo['vin']:
-        in_info = nscoind.getrawtransaction(vin['txid'], 1)
+        in_info = projectcoind.getrawtransaction(vin['txid'], 1)
         vout = in_info['vout'][vin['vout']]
         result = result + vout['value']
     return result
@@ -193,12 +193,12 @@ def compute_amount_out(txinfo):
         result = result + vout['value']
     return result
 
-def sanity_test_fee(nscoind, txdata_hex, max_fee):
+def sanity_test_fee(projectcoind, txdata_hex, max_fee):
     class FeeError(RuntimeError):
         pass
     try:
-        txinfo = nscoind.decoderawtransaction(txdata_hex)
-        total_in = compute_amount_in(nscoind, txinfo)
+        txinfo = projectcoind.decoderawtransaction(txdata_hex)
+        total_in = compute_amount_in(projectcoind, txinfo)
         total_out = compute_amount_out(txinfo)
         if total_in-total_out > max_fee:
             raise FeeError("Rejecting transaction, unreasonable fee of "+str(total_in-total_out))
@@ -221,15 +221,15 @@ def main():
 
     parser = optparse.OptionParser(usage="%prog [options]")
     parser.add_option("--from", dest="fromaddresses", default=None,
-                      help="addresses to get NsCoins from")
+                      help="addresses to get ProjectCoins from")
     parser.add_option("--to", dest="to", default=None,
-                      help="address to get send NsCoins to")
+                      help="address to get send ProjectCoins to")
     parser.add_option("--amount", dest="amount", default=None,
                       help="amount to send")
     parser.add_option("--fee", dest="fee", default="0.0",
                       help="fee to include")
     parser.add_option("--datadir", dest="datadir", default=determine_db_dir(),
-                      help="location of nscoin.conf file with RPC username/password (default: %default)")
+                      help="location of projectcoin.conf file with RPC username/password (default: %default)")
     parser.add_option("--testnet", dest="testnet", default=False, action="store_true",
                       help="Use the test network")
     parser.add_option("--dry_run", dest="dry_run", default=False, action="store_true",
@@ -240,10 +240,10 @@ def main():
     check_json_precision()
     config = read_bitcoin_config(options.datadir)
     if options.testnet: config['testnet'] = True
-    nscoind = connect_JSON(config)
+    projectcoind = connect_JSON(config)
 
     if options.amount is None:
-        address_summary = list_available(nscoind)
+        address_summary = list_available(projectcoind)
         for address,info in address_summary.iteritems():
             n_transactions = len(info['outputs'])
             if n_transactions > 1:
@@ -253,14 +253,14 @@ def main():
     else:
         fee = Decimal(options.fee)
         amount = Decimal(options.amount)
-        while unlock_wallet(nscoind) == False:
+        while unlock_wallet(projectcoind) == False:
             pass # Keep asking for passphrase until they get it right
-        txdata = create_tx(nscoind, options.fromaddresses.split(","), options.to, amount, fee)
-        sanity_test_fee(nscoind, txdata, amount*Decimal("0.01"))
+        txdata = create_tx(projectcoind, options.fromaddresses.split(","), options.to, amount, fee)
+        sanity_test_fee(projectcoind, txdata, amount*Decimal("0.01"))
         if options.dry_run:
             print(txdata)
         else:
-            txid = nscoind.sendrawtransaction(txdata)
+            txid = projectcoind.sendrawtransaction(txdata)
             print(txid)
 
 if __name__ == '__main__':

@@ -53,7 +53,7 @@ private:
     Qt::SortOrder order;
 };
 
-/** Model for list of recently generated payment requests / nscoin: URIs.
+/** Model for list of recently generated payment requests / projectcoin: URIs.
  * Part of wallet model.
  */
 class RecentRequestsTableModel : public QAbstractTableModel
@@ -67,10 +67,8 @@ public:
     enum ColumnIndex {
         Date = 0,
         Label = 1,
-        Address = 2,
-        Balance = 3,
-        Message = 4,
-        Amount = 5,
+        Message = 2,
+        Amount = 3,
         NUMBER_OF_COLUMNS
     };
 

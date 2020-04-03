@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -136,7 +136,7 @@ CoinControlDialog::CoinControlDialog(QWidget* parent, bool fMultisigEnabled) : Q
     ui->treeWidget->setColumnWidth(COLUMN_AMOUNT, 100);
     ui->treeWidget->setColumnWidth(COLUMN_LABEL, 170);
     ui->treeWidget->setColumnWidth(COLUMN_ADDRESS, 190);
-    //ui->treeWidget->setColumnWidth(COLUMN_OBFUSCATION_ROUNDS, 88);
+    ui->treeWidget->setColumnWidth(COLUMN_OBFUSCATION_ROUNDS, 88);
     ui->treeWidget->setColumnWidth(COLUMN_DATE, 80);
     ui->treeWidget->setColumnWidth(COLUMN_CONFIRMATIONS, 100);
     ui->treeWidget->setColumnWidth(COLUMN_PRIORITY, 100);
@@ -237,7 +237,7 @@ void CoinControlDialog::buttonToggleLockClicked()
             } else {
                 model->lockCoin(outpt);
                 item->setDisabled(true);
-                item->setIcon(COLUMN_CHECKBOX, QIcon(GUIUtil::getThemeImage(":/icons/lock_closed")));
+                item->setIcon(COLUMN_CHECKBOX, QIcon(":/icons/lock_closed"));
             }
             updateLabelLocked();
         }
@@ -322,7 +322,7 @@ void CoinControlDialog::lockCoin()
     COutPoint outpt(uint256(contextMenuItem->text(COLUMN_TXHASH).toStdString()), contextMenuItem->text(COLUMN_VOUT_INDEX).toUInt());
     model->lockCoin(outpt);
     contextMenuItem->setDisabled(true);
-    contextMenuItem->setIcon(COLUMN_CHECKBOX, QIcon(GUIUtil::getThemeImage(":/icons/lock_closed")));
+    contextMenuItem->setIcon(COLUMN_CHECKBOX, QIcon(":/icons/lock_closed"));
     updateLabelLocked();
 }
 
@@ -669,7 +669,7 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)
     }
 
     // actually update labels
-    int nDisplayUnit = BitcoinUnits::NSC;
+    int nDisplayUnit = BitcoinUnits::PRJ;
     if (model && model->getOptionsModel())
         nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 
@@ -756,8 +756,7 @@ void CoinControlDialog::updateView()
 
     ui->treeWidget->clear();
     ui->treeWidget->setEnabled(false); // performance, otherwise updateLabels would be called for every checked checkbox
-//    ui->treeWidget->setAlternatingRowColors(!treeMode);
-		ui->treeWidget->setAlternatingRowColors(true);
+    ui->treeWidget->setAlternatingRowColors(!treeMode);
     QFlags<Qt::ItemFlag> flgCheckbox = Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
     QFlags<Qt::ItemFlag> flgTristate = Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsTristate;
 
@@ -823,7 +822,7 @@ void CoinControlDialog::updateView()
                     COutPoint outpt(out.tx->GetHash(), out.i);
                     coinControl->UnSelect(outpt); // just to be sure
                     itemOutput->setDisabled(true);
-                    itemOutput->setIcon(COLUMN_CHECKBOX, QIcon(GUIUtil::getThemeImage(":/icons/lock_closed")));
+                    itemOutput->setIcon(COLUMN_CHECKBOX, QIcon(":/icons/lock_closed"));
                 }
             } else {
                 itemOutput->setText(COLUMN_TYPE, "Personal");
@@ -835,7 +834,7 @@ void CoinControlDialog::updateView()
             if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, outputAddress)) {
                 sAddress = QString::fromStdString(CBitcoinAddress(outputAddress).ToString());
 
-                // if listMode or change => show nscoin address. In tree mode, address is not shown again for direct wallet address outputs
+                // if listMode or change => show ProjectCoin address. In tree mode, address is not shown again for direct wallet address outputs
                 if (!treeMode || (!(sAddress == sWalletAddress)))
                     itemOutput->setText(COLUMN_ADDRESS, sAddress);
 
@@ -870,7 +869,7 @@ void CoinControlDialog::updateView()
             itemOutput->setToolTip(COLUMN_DATE, GUIUtil::dateTimeStr(out.tx->GetTxTime()));
             itemOutput->setText(COLUMN_DATE_INT64, strPad(QString::number(out.tx->GetTxTime()), 20, " "));
 
-/*
+
             // ds+ rounds
             CTxIn vin = CTxIn(out.tx->GetHash(), out.i);
             int rounds = pwalletMain->GetInputObfuscationRounds(vin);
@@ -879,7 +878,7 @@ void CoinControlDialog::updateView()
                 itemOutput->setText(COLUMN_OBFUSCATION_ROUNDS, strPad(QString::number(rounds), 11, " "));
             else
                 itemOutput->setText(COLUMN_OBFUSCATION_ROUNDS, strPad(QString(tr("n/a")), 11, " "));
-*/
+
 
             // confirmations
             itemOutput->setText(COLUMN_CONFIRMATIONS, strPad(QString::number(out.nDepth), 8, " "));
@@ -903,7 +902,7 @@ void CoinControlDialog::updateView()
                 COutPoint outpt(txhash, out.i);
                 coinControl->UnSelect(outpt); // just to be sure
                 itemOutput->setDisabled(true);
-                itemOutput->setIcon(COLUMN_CHECKBOX, QIcon(GUIUtil::getThemeImage(":/icons/lock_closed")));
+                itemOutput->setIcon(COLUMN_CHECKBOX, QIcon(":/icons/lock_closed"));
             }
 
             // set checkbox

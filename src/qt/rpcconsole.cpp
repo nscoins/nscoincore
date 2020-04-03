@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -57,12 +57,12 @@ const QString RESYNC("-resync");
 
 const struct {
     const char* url;
-    const QString& source;
+    const char* source;
 } ICON_MAPPING[] = {
-    {"cmd-request", GUIUtil::getThemeImage(":/icons/tx_input")},
-    {"cmd-reply", GUIUtil::getThemeImage(":/icons/tx_output")},
-    {"cmd-error", GUIUtil::getThemeImage(":/icons/tx_output")},
-    {"misc", GUIUtil::getThemeImage(":/icons/tx_inout")},
+    {"cmd-request", ":/icons/tx_input"},
+    {"cmd-reply", ":/icons/tx_output"},
+    {"cmd-error", ":/icons/tx_output"},
+    {"misc", ":/icons/tx_inout"},
     {NULL, NULL}};
 
 /* Object for executing console RPC commands in a separate thread.
@@ -226,13 +226,10 @@ RPCConsole::RPCConsole(QWidget* parent) : QDialog(parent),
                                           cachedNodeid(-1)
 {
     ui->setupUi(this);
-
-    ui->clearButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-
     GUIUtil::restoreWindowGeometry("nRPCConsoleWindow", this->size(), this);
 
 #ifndef Q_OS_MAC
-    ui->openDebugLogfileButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/export")));
+    ui->openDebugLogfileButton->setIcon(QIcon(":/icons/export"));
 #endif
 
     // Install event filter for up and down arrow
@@ -504,7 +501,7 @@ void RPCConsole::clear()
         "td.cmd-error { color: red; } "
         "b { color: #006060; } ");
 
-    message(CMD_REPLY, (tr("Welcome to the NSC RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the ProjectCoin RPC console.") + "<br>" +
                            tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                            tr("Type <b>help</b> for an overview of available commands.")),
         true);

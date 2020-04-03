@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 #define BITCOIN_QT_BITCOINGUI_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/nscoin-config.h"
+#include "config/projectcoin-config.h"
 #endif
 
 #include "amount.h"
@@ -137,7 +137,6 @@ private:
     QMenu* trayIconMenu;
     Notificator* notificator;
     RPCConsole* rpcConsole;
-    BlockExplorer* explorerWindow;
 
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
@@ -209,6 +208,8 @@ private slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
+    /** Switch to Explorer Page */
+    void gotoBlockExplorerPage();
     /** Switch to masternode page */
     void gotoMasternodePage();
     /** Switch to tools page */

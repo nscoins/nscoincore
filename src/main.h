@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,7 @@
 #define BITCOIN_MAIN_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/nscoin-config.h"
+#include "config/projectcoin-config.h"
 #endif
 
 #include "amount.h"
@@ -59,7 +59,6 @@ static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 50000;
 /** Default for accepting alerts from the P2P network. */
 static const bool DEFAULT_ALERTS = true;
-static const bool DEFAULT_GM = true;
 /** The maximum size for transactions we're willing to relay/mine */
 static const unsigned int MAX_STANDARD_TX_SIZE = 100000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
@@ -77,7 +76,7 @@ static const unsigned int BLOCKFILE_CHUNK_SIZE = 0x1000000; // 16 MiB
 /** The pre-allocation chunk size for rev?????.dat files (since 0.8) */
 static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
-static const int COINBASE_MATURITY = 60;
+static const int COINBASE_MATURITY = 100;
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 /** Maximum number of script-checking threads allowed */
@@ -104,13 +103,14 @@ static const unsigned int MAX_REJECT_MESSAGE_LENGTH = 111;
 /** Enable bloom filter */
  static const bool DEFAULT_PEERBLOOMFILTERS = true;
 
+ /** Default for -blockspamfilter, use header spam filter */
+static const bool DEFAULT_BLOCK_SPAM_FILTER = true;
+/** Default for -blockspamfiltermaxsize, maximum size of the list of indexes in the block spam filter */
+static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_SIZE = COINBASE_MATURITY;
+/** Default for -blockspamfiltermaxavg, maximum average size of an index occurrence in the block spam filter */
+static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_AVG = 10;
 
- static const bool DEFAULT_BLOCK_SPAM_FILTER = true;
- /** Default for -blockspamfiltermaxsize, maximum size of the list of indexes in the block spam filter */
- static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_SIZE = COINBASE_MATURITY;
- /** Default for -blockspamfiltermaxavg, maximum average size of an index occurrence in the block spam filter */
- static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_AVG = 10;
-
+static const unsigned int DEFAULT_BLOCK_SPAM_START = 254100;
 
 /** "reject" message codes */
 static const unsigned char REJECT_MALFORMED = 0x01;
@@ -125,8 +125,6 @@ static const unsigned char REJECT_CHECKPOINT = 0x43;
 struct BlockHasher {
     size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
 };
-
-
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
@@ -148,7 +146,6 @@ extern bool fCheckBlockIndex;
 extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern bool fAlerts;
-extern bool fGM;
 
 extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
@@ -267,32 +264,6 @@ int GetInputAgeIX(uint256 nTXHash, CTxIn& vin);
 bool GetCoinAge(const CTransaction& tx, unsigned int nTxTime, uint64_t& nCoinAge);
 int GetIXConfirmations(uint256 nTXHash);
 
-inline int Dynamic_coinbase_maturity(int height) {
-  if (height <= Params().LAST_POW_BLOCK()) {
-    return 128;
-  } else if (height <= 30000 && height > Params().LAST_POW_BLOCK()) {
-    return 1024;
-  } else if (height <= 70000 && height > 30000) {
-    return 512;
-  } else if (height <= 120000 && height > 70000) {
-    return 256;
-  } else if (height <= 200000 && height > 120000) {
-    return 128;
-  } else if (height <= 300000 && height > 200000) {
-    return 128;
-  } else if (height <= 450000 && height > 300000) {
-    return 128;
-  } else if (height <= 750000 && height > 450000) {
-    return 128;
-  } else if (height <= 1250000 && height > 750000) {
-    return 128;
-  } else if (height > 1250000) {
-    return 128;
-  }
-
-  return 128;
-}
-
 struct CNodeStateStats {
     int nMisbehavior;
     int nSyncHeight;
@@ -380,7 +351,7 @@ void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCach
 
 /** Context-independent validity checks */
 bool CheckTransaction(const CTransaction& tx, CValidationState& state);
-bool CheckTxFilter(const CTransaction& tx);
+
 /**
  * Check if transaction will be final in the next block to be created.
  *

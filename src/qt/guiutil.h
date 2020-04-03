@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -19,10 +19,6 @@
 #include <QTableView>
 #include <QTableWidget>
 
-#include <QLayout>
-#include <QRect>
-#include <QStyle>
-
 #include <boost/filesystem.hpp>
 
 class QValidatedLineEdit;
@@ -37,7 +33,7 @@ class QUrl;
 class QWidget;
 QT_END_NAMESPACE
 
-/** Utility functions used by the nscoin Qt UI.
+/** Utility functions used by the ProjectCoin Qt UI.
  */
 namespace GUIUtil
 {
@@ -45,14 +41,14 @@ namespace GUIUtil
 QString dateTimeStr(const QDateTime& datetime);
 QString dateTimeStr(qint64 nTime);
 
-// Render nscoin addresses in monospace font
+// Render ProjectCoin addresses in monospace font
 QFont bitcoinAddressFont();
 
 // Set up widgets for address and amounts
 void setupAddressWidget(QValidatedLineEdit* widget, QWidget* parent);
 void setupAmountWidget(QLineEdit* widget, QWidget* parent);
 
-// Parse "nscoin:" URI into recipient object, return true on successful parsing
+// Parse "projectcoin:" URI into recipient object, return true on successful parsing
 bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out);
 bool parseBitcoinURI(QString uri, SendCoinsRecipient* out);
 QString formatBitcoinURI(const SendCoinsRecipient& info);
@@ -110,7 +106,7 @@ bool isObscured(QWidget* w);
 // Open debug.log
 void openDebugLogfile();
 
-// Open nscoin.conf
+// Open projectcoin.conf
 void openConfigfile();
 
 // Open masternode.conf
@@ -208,8 +204,6 @@ QString loadStyleSheet();
 /** Check whether a theme is not build-in */
 bool isExternal(QString theme);
 
-QString getThemeImage(QString image);
-
 /* Convert QString to OS specific boost path through UTF-8 */
 boost::filesystem::path qstringToBoostPath(const QString& path);
 
@@ -241,38 +235,5 @@ typedef QProgressBar ProgressBar;
 #endif
 
 } // namespace GUIUtil
-
-#ifndef FLOWLAYOUT_H
-#define FLOWLAYOUT_H
-
-class FlowLayout : public QLayout
-{
-public:
-    explicit FlowLayout(QWidget *parent, int margin = -1, int hSpacing = -1, int vSpacing = -1);
-    explicit FlowLayout(int margin = -1, int hSpacing = -1, int vSpacing = -1);
-    ~FlowLayout();
-
-    void addItem(QLayoutItem *item) override;
-    int horizontalSpacing() const;
-    int verticalSpacing() const;
-    Qt::Orientations expandingDirections() const override;
-    bool hasHeightForWidth() const override;
-    int heightForWidth(int) const override;
-    int count() const override;
-    QLayoutItem *itemAt(int index) const override;
-    QSize minimumSize() const override;
-    void setGeometry(const QRect &rect) override;
-    QSize sizeHint() const override;
-    QLayoutItem *takeAt(int index) override;
-
-private:
-    int doLayout(const QRect &rect, bool testOnly) const;
-    int smartSpacing(QStyle::PixelMetric pm) const;
-
-    QList<QLayoutItem *> itemList;
-    int m_hSpace;
-    int m_vSpace;
-};
-#endif // FLOWLAYOUT_H
 
 #endif // BITCOIN_QT_GUIUTIL_H

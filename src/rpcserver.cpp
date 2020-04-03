@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -243,10 +243,10 @@ UniValue stop(const UniValue& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
-            "\nStop nscoin server.");
+            "\nStop ProjectCoin server.");
     // Shutdown will take long enough that the response should get back
     StartShutdown();
-    return "nscoin server stopping";
+    return "ProjectCoin server stopping";
 }
 
 
@@ -323,25 +323,25 @@ static const CRPCCommand vRPCCommands[] =
         {"hidden", "reconsiderblock", &reconsiderblock, true, true, false},
         {"hidden", "setmocktime", &setmocktime, true, false, false},
 
-        /* nscoin features */
-        {"nscoin", "masternode", &masternode, true, true, false},
-        {"nscoin", "listmasternodes", &listmasternodes, true, true, false},
-        {"nscoin", "getmasternodecount", &getmasternodecount, true, true, false},
-        {"nscoin", "masternodeconnect", &masternodeconnect, true, true, false},
-        {"nscoin", "masternodecurrent", &masternodecurrent, true, true, false},
-        {"nscoin", "masternodedebug", &masternodedebug, true, true, false},
-        {"nscoin", "startmasternode", &startmasternode, true, true, false},
-        {"nscoin", "createmasternodekey", &createmasternodekey, true, true, false},
-        {"nscoin", "getmasternodeoutputs", &getmasternodeoutputs, true, true, false},
-        {"nscoin", "listmasternodeconf", &listmasternodeconf, true, true, false},
-        {"nscoin", "getmasternodestatus", &getmasternodestatus, true, true, false},
-        {"nscoin", "getmasternodewinners", &getmasternodewinners, true, true, false},
-        {"nscoin", "getmasternodescores", &getmasternodescores, true, true, false},
-        {"nscoin", "mnsync", &mnsync, true, true, false},
-        {"nscoin", "spork", &spork, true, true, false},
-        {"nscoin", "getpoolinfo", &getpoolinfo, true, true, false},
+        /* ProjectCoin features */
+        {"projectcoin", "masternode", &masternode, true, true, false},
+        {"projectcoin", "listmasternodes", &listmasternodes, true, true, false},
+        {"projectcoin", "getmasternodecount", &getmasternodecount, true, true, false},
+        {"projectcoin", "masternodeconnect", &masternodeconnect, true, true, false},
+        {"projectcoin", "masternodecurrent", &masternodecurrent, true, true, false},
+        {"projectcoin", "masternodedebug", &masternodedebug, true, true, false},
+        {"projectcoin", "startmasternode", &startmasternode, true, true, false},
+        {"projectcoin", "createmasternodekey", &createmasternodekey, true, true, false},
+        {"projectcoin", "getmasternodeoutputs", &getmasternodeoutputs, true, true, false},
+        {"projectcoin", "listmasternodeconf", &listmasternodeconf, true, true, false},
+        {"projectcoin", "getmasternodestatus", &getmasternodestatus, true, true, false},
+        {"projectcoin", "getmasternodewinners", &getmasternodewinners, true, true, false},
+        {"projectcoin", "getmasternodescores", &getmasternodescores, true, true, false},
+        {"projectcoin", "mnsync", &mnsync, true, true, false},
+        {"projectcoin", "spork", &spork, true, true, false},
+        {"projectcoin", "getpoolinfo", &getpoolinfo, true, true, false},
 #ifdef ENABLE_WALLET
-        {"nscoin", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
+        {"projectcoin", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 
         /* Wallet */
         {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
@@ -606,16 +606,16 @@ void StartRPCThreads()
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
         uiInterface.ThreadSafeMessageBox(strprintf(
-                                             _("To use nscoind, or the -server option to nscoin-qt, you must set an rpcpassword in the configuration file:\n"
+                                             _("To use projectcoind, or the -server option to projectcoin-qt, you must set an rpcpassword in the configuration file:\n"
                                                "%s\n"
                                                "It is recommended you use the following random password:\n"
-                                               "rpcuser=nscoinrpc\n"
+                                               "rpcuser=projectcoinrpc\n"
                                                "rpcpassword=%s\n"
                                                "(you do not need to remember this password)\n"
                                                "The username and password MUST NOT be the same.\n"
                                                "If the file does not exist, create it with owner-readable-only file permissions.\n"
                                                "It is also recommended to set alertnotify so you are notified of problems;\n"
-                                               "for example: alertnotify=echo %%s | mail -s \"nscoin Alert\" admin@foo.com\n"),
+                                               "for example: alertnotify=echo %%s | mail -s \"ProjectCoin Alert\" admin@foo.com\n"),
                                              GetConfigFile().string(),
                                              EncodeBase58(&rand_pwd[0], &rand_pwd[0] + 32)),
             "", CClientUIInterface::MSG_ERROR | CClientUIInterface::SECURE);
@@ -1066,7 +1066,7 @@ std::vector<std::string> CRPCTable::listCommands() const
 
 std::string HelpExampleCli(string methodname, string args)
 {
-    return "> nscoin-cli " + methodname + " " + args + "\n";
+    return "> projectcoin-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(string methodname, string args)

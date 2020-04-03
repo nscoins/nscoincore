@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -235,10 +235,8 @@ void CMasternode::Check(bool forceCheck)
     activeState = MASTERNODE_ENABLED; // OK
 }
 
-//int64_t CMasternode::SecondsSincePayment(bool test)
 int64_t CMasternode::SecondsSincePayment()
 {
-//    int64_t sec = (GetAdjustedTime() - GetLastPaid(test));
     int64_t sec = (GetAdjustedTime() - GetLastPaid());
     int64_t month = 60 * 60 * 24 * 30;
 
@@ -254,13 +252,12 @@ int64_t CMasternode::SecondsSincePayment()
     return month + hash.GetCompact(false);
 }
 
-//int64_t CMasternode::GetLastPaid(bool test)
 int64_t CMasternode::GetLastPaid()
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
 
     if (!pindexPrev)
-        return 0;
+        return false;
 
     CScript mnpayee;
     mnpayee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
@@ -270,14 +267,12 @@ int64_t CMasternode::GetLastPaid()
     ss << sigTime;
     uint256 hash = ss.GetHash();
 
-    // use a deterministic offset to break a tie -- 1.5 minutes
-    int64_t nOffset = hash.GetCompact(false) % 90;
+    // use a deterministic offset to break a tie -- 2.5 minutes
+    int64_t nOffset = hash.GetCompact(false) % 150;
 
     const CBlockIndex* BlockReading = pindexPrev;
 
-    int nMnCount = 0;
-    nMnCount = int(mnodeman.CountEnabled(Level()) * 1.25); // new
-
+    int nMnCount = mnodeman.CountEnabled(Level()) / 100 * 125;
     int n = 0;
     for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++) {
         if (n >= nMnCount) {
@@ -287,10 +282,11 @@ int64_t CMasternode::GetLastPaid()
 
         if (masternodePayments.mapMasternodeBlocks.count(BlockReading->nHeight)) {
             /*
-                Search for this payee, with at least 6 votes.
+                Search for this payee, with at least 2 votes. This will aid in consensus allowing the network
+                to converge on the same payees quickly, then keep the same schedule.
             */
-            if (masternodePayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 6)) {
-                return BlockReading->nTime - nOffset;
+            if (masternodePayments.mapMasternodeBlocks[BlockReading->nHeight].HasPayeeWithVotes(mnpayee, 2)) {
+                return BlockReading->nTime + nOffset;
             }
         }
 
@@ -310,68 +306,73 @@ bool CMasternode::IsValidNetAddr()
 
 unsigned CMasternode::Level(CAmount vin_val, int blockHeight)
 {
-    if (blockHeight >= 0 && blockHeight < Params().LAST_POW_BLOCK()) {
+    if (blockHeight >= 0 && blockHeight < 2000) {
       switch(vin_val) {
           case 250 * COIN: return 1;
           case 500 * COIN: return 2;
           case 1000 * COIN: return 3;
       }
-    } else if (blockHeight >= Params().LAST_POW_BLOCK() && blockHeight < 30000) {
+    } else if (blockHeight >= 2000 && blockHeight < 10000) {
       switch(vin_val) {
           case 500 * COIN: return 1;
           case 1000 * COIN: return 2;
-          case 2000 * COIN: return 3;
+          case 1500 * COIN: return 3;
       }
-    } else if (blockHeight >= 30000 && blockHeight < 70000) {
+    } else if (blockHeight >= 10000 && blockHeight < 30000) {
       switch(vin_val) {
           case 1000 * COIN: return 1;
-          case 2000 * COIN: return 2;
+          case 1500 * COIN: return 2;
+          case 3000 * COIN: return 3;
+      }
+    } else if (blockHeight >= 30000 && blockHeight < 60000) {
+      switch(vin_val) {
+          case 1500 * COIN: return 1;
+          case 3000 * COIN: return 2;
           case 4000 * COIN: return 3;
       }
-    } else if (blockHeight >= 70000 && blockHeight < 120000) {
+    } else if (blockHeight >= 60000 && blockHeight < 100000) {
       switch(vin_val) {
-          case 100000 * COIN: return 1;
+          case 3000 * COIN: return 1;
           case 4000 * COIN: return 2;
           case 6000 * COIN: return 3;
       }
-  } else if (blockHeight >= 120000 && blockHeight < 200000) {
+    } else if (blockHeight >= 100000 && blockHeight < 180000) {
       switch(vin_val) {
-          case 100000 * COIN: return 1;
+          case 4000 * COIN: return 1;
           case 6000 * COIN: return 2;
+          case 8000 * COIN: return 3;
+      }
+    } else if (blockHeight >= 180000 && blockHeight < 250000) {
+      switch(vin_val) {
+          case 6000 * COIN: return 1;
+          case 8000 * COIN: return 2;
           case 10000 * COIN: return 3;
       }
-  } else if (blockHeight >= 200000 && blockHeight < 300000) { 
+    } else if (blockHeight >= 250000 && blockHeight < 500000) {
       switch(vin_val) {
-          // case 500 * COIN: return 1; //turned off
+          case 80000 * COIN: return 1;
           case 100000 * COIN: return 2;
-          case 20000 * COIN: return 3;
+          case 150000 * COIN: return 3;
       }
-    } else if (blockHeight >= 300000 && blockHeight < 450000) {
+    } else if (blockHeight >= 500000 && blockHeight < 750000) {
       switch(vin_val) {
-          // case 500 * COIN: return 1;
-          case 100000 * COIN: return 2;
-          case 30000 * COIN: return 3;
+          case 100000 * COIN: return 1;
+          case 150000 * COIN: return 2;
+          case 200000 * COIN: return 3;
       }
-    } else if (blockHeight >= 450000 && blockHeight < 750000) {
+    } else if (blockHeight >= 750000 && blockHeight < 1250000) {
       switch(vin_val) {
-          // case 500 * COIN: return 1;
-          case 100000 * COIN: return 2;
-          case 40000 * COIN: return 3;
+          case 150000 * COIN: return 1;
+          case 200000 * COIN: return 2;
+          case 250000 * COIN: return 3;
       }
-    } else if (blockHeight >= 750000 && blockHeight < 1500000) {
+    } else {
       switch(vin_val) {
-          // case 500 * COIN: return 1;
-          case 100000 * COIN: return 2;
-          case 50000 * COIN: return 3;
-      }
-    } else if (blockHeight >= 1500000) {
-      switch(vin_val) {
-          // case 500 * COIN: return 1;
-          case 100000 * COIN: return 2;
-          case 60000 * COIN: return 3;
+          case 200000 * COIN: return 1;
+          case 250000 * COIN: return 2;
+          case 300000 * COIN: return 3;
       }
     }
-
 
     return 0;
 }
@@ -660,7 +661,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
     // search existing Masternode list
     CMasternode* pmn = mnodeman.Find(vin);
 
-    if (pmn) {
+    if(pmn) {
         // nothing to do here if we already know about this masternode and it's enabled
         if (pmn->IsEnabled())
             return true;
@@ -677,18 +678,20 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
 */
 
     CMutableTransaction tx;
+
+    CValidationState state = CMasternodeMan::GetInputCheckingTx(vin, tx);
+
+    if(!state.IsValid()) {
+        state.IsInvalid(nDoS);
+        return false;
+    }
+
     {
         TRY_LOCK(cs_main, lockMain);
         if (!lockMain) {
             // not mnb fault, let it to be checked again later
             mnodeman.mapSeenMasternodeBroadcast.erase(GetHash());
             masternodeSync.mapSeenSyncMNB.erase(GetHash());
-            return false;
-        }
-
-        CValidationState state = CMasternodeMan::GetInputCheckingTx(vin, tx);
-        if (!state.IsValid()) {
-            state.IsInvalid(nDoS);
             return false;
         }
 
@@ -710,13 +713,13 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
     }
 
     // verify that sig time is legit in past
-    // should be at least not earlier than block when 1000 nscoin tx got MASTERNODE_MIN_CONFIRMATIONS
+    // should be at least not earlier than block when 1000 ProjectCoin tx got MASTERNODE_MIN_CONFIRMATIONS
     uint256 hashBlock = 0;
     CTransaction tx2;
     GetTransaction(vin.prevout.hash, tx2, hashBlock, true);
     BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
     if (mi != mapBlockIndex.end() && mi->second) {
-        CBlockIndex* pMNIndex = mi->second;                                                        // block for 1000 nscoin tx -> 1 confirmation
+        CBlockIndex* pMNIndex = mi->second;                                                        // block for 1000 ProjectCoin tx -> 1 confirmation
         CBlockIndex* pConfIndex = chainActive[pMNIndex->nHeight + MASTERNODE_MIN_CONFIRMATIONS - 1]; // block where tx got MASTERNODE_MIN_CONFIRMATIONS
         if (pConfIndex->GetBlockTime() > sigTime) {
             LogPrintf("mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
@@ -829,14 +832,14 @@ bool CMasternodePing::CheckAndUpdate(int& nDos, bool fRequireEnabled)
         return false;
     }
 
-    LogPrint("masternode", "CMasternodePing::CheckAndUpdate - New Ping - %s - %lli\n", blockHash.ToString(), sigTime);
+    LogPrint("masternode","CMasternodePing::CheckAndUpdate - New Ping - %s - %lli\n", blockHash.ToString(), sigTime);
 
     // see if we have this Masternode
     CMasternode* pmn = mnodeman.Find(vin);
-    if (pmn != NULL) {
-      LogPrint("masternode", "Masternode.cpp my pmn address = %s\n", pmn->addr.ToString());
-    } else {
-      LogPrint("masternode", "Masternode.cpp my pmn == NULL so vin = %s\n", vin.prevout.hash.ToString());
+    if (pmn != NULL){
+    //LogPrintf("Masternode.cpp my pmn address = %s\n", pmn->addr.ToString());
+    }else {
+      //LogPrintf("Masternode.cpp my pmn == NULL so vin = %s\n", vin.prevout.hash.ToString());
     }
 
     if (pmn != NULL && pmn->protocolVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {

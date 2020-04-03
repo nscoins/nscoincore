@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -88,7 +88,7 @@ std::string CTxOut::ToString() const
 }
 
 CMutableTransaction::CMutableTransaction() : nVersion(CTransaction::CURRENT_VERSION), nLockTime(0) {}
-CMutableTransaction::CMutableTransaction(const CTransaction& tx) : nVersion(tx.nVersion), vin(tx.vin), vout(tx.vout), nLockTime(tx.nLockTime), blob(tx.blob) {}
+CMutableTransaction::CMutableTransaction(const CTransaction& tx) : nVersion(tx.nVersion), vin(tx.vin), vout(tx.vout), nLockTime(tx.nLockTime) {}
 
 uint256 CMutableTransaction::GetHash() const
 {
@@ -98,12 +98,11 @@ uint256 CMutableTransaction::GetHash() const
 std::string CMutableTransaction::ToString() const
 {
     std::string str;
-    str += strprintf("CMutableTransaction(ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u, blob=%s)\n",
+    str += strprintf("CMutableTransaction(ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
         nVersion,
         vin.size(),
         vout.size(),
-        nLockTime,
-        blob);
+        nLockTime);
     for (unsigned int i = 0; i < vin.size(); i++)
         str += "    " + vin[i].ToString() + "\n";
     for (unsigned int i = 0; i < vout.size(); i++)
@@ -116,10 +115,9 @@ void CTransaction::UpdateHash() const
     *const_cast<uint256*>(&hash) = SerializeHashS(*this);
 }
 
-//CTransaction::CTransaction() : hash(), nVersion(CTransaction::CURRENT_VERSION), vin(), vout(), nLockTime(0) { }
-CTransaction::CTransaction() : hash(), nVersion(CTransaction::CURRENT_VERSION), vin(), vout(), nLockTime(0), blob() { }
+CTransaction::CTransaction() : hash(), nVersion(CTransaction::CURRENT_VERSION), vin(), vout(), nLockTime(0) { }
 
-CTransaction::CTransaction(const CMutableTransaction &tx) : nVersion(tx.nVersion), vin(tx.vin), vout(tx.vout), nLockTime(tx.nLockTime), blob(tx.blob) {
+CTransaction::CTransaction(const CMutableTransaction &tx) : nVersion(tx.nVersion), vin(tx.vin), vout(tx.vout), nLockTime(tx.nLockTime) {
     UpdateHash();
 }
 
@@ -128,7 +126,6 @@ CTransaction& CTransaction::operator=(const CTransaction &tx) {
     *const_cast<std::vector<CTxIn>*>(&vin) = tx.vin;
     *const_cast<std::vector<CTxOut>*>(&vout) = tx.vout;
     *const_cast<unsigned int*>(&nLockTime) = tx.nLockTime;
-    *const_cast<std::string*>(&blob) = tx.blob;
     *const_cast<uint256*>(&hash) = tx.hash;
     return *this;
 }
@@ -138,7 +135,7 @@ CAmount CTransaction::GetValueOut() const
     CAmount nValueOut = 0;
     for (std::vector<CTxOut>::const_iterator it(vout.begin()); it != vout.end(); ++it)
     {
-        // nscoin: previously MoneyRange() was called here. This has been replaced with negative check and boundary wrap check.
+        // ProjectCoin: previously MoneyRange() was called here. This has been replaced with negative check and boundary wrap check.
         if (it->nValue < 0)
             throw std::runtime_error("CTransaction::GetValueOut() : value out of range : less than 0");
 
@@ -188,13 +185,12 @@ unsigned int CTransaction::CalculateModifiedSize(unsigned int nTxSize) const
 std::string CTransaction::ToString() const
 {
     std::string str;
-    str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u, blob=%s)\n",
+    str += strprintf("CTransaction(hash=%s, ver=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
         GetHash().ToString().substr(0,10),
         nVersion,
         vin.size(),
         vout.size(),
-        nLockTime,
-        blob);
+        nLockTime);
     for (unsigned int i = 0; i < vin.size(); i++)
         str += "    " + vin[i].ToString() + "\n";
     for (unsigned int i = 0; i < vout.size(); i++)

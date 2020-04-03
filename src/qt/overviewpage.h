@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The nscoin Core developers
+// Copyright (c) 2018-2019 The ProjectCoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -75,14 +75,8 @@ private slots:
     void updateAlerts(const QString& warnings);
     void updateWatchOnlyLabels(bool showWatchOnly);
     void updateMasternodeInfo();
-    void updateBlockChainInfo();
+    void updatBlockChainInfo();
     void openMyAddresses();
-    // void on_pushButton_Website_clicked();
-    // void on_pushButton_Discord_clicked();
-    // void on_pushButton_Telegram_clicked();
-    // void on_pushButton_Twitter_clicked();
-/*    void on_pushButton_Facebook_clicked();*/
-    // void on_pushButton_Explorer_clicked();
 };
 
 #endif // BITCOIN_QT_OVERVIEWPAGE_H

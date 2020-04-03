@@ -11,13 +11,13 @@
   </array>
 
   <key>CFBundleIconFile</key>
-  <string>nscoin.icns</string>
+  <string>projectcoin.icns</string>
 
   <key>CFBundlePackageType</key>
   <string>APPL</string>
 
   <key>CFBundleGetInfoString</key>
-  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2009-@COPYRIGHT_YEAR@ The Bitcoin Core developers, 2014-@COPYRIGHT_YEAR@ The Dash Core developers, 2015-@COPYRIGHT_YEAR@ The PIVX Core developers, 2017-@COPYRIGHT_YEAR@ The NsCoin Core developers</string>
+  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2009-@COPYRIGHT_YEAR@ The Bitcoin Core developers, 2014-@COPYRIGHT_YEAR@ The Dash Core developers, 2015-@COPYRIGHT_YEAR@ The PIVX Core developers, 2017-@COPYRIGHT_YEAR@ The ProjectCoin Core developers</string>
 
   <key>CFBundleShortVersionString</key>
   <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@</string>
@@ -29,10 +29,10 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>NsCoin-Qt</string>
+  <string>ProjectCoin-Qt</string>
 
   <key>CFBundleIdentifier</key>
-  <string>io.nscoin.NsCoin-Qt</string>
+  <string>io.projectcoin.ProjectCoin-Qt</string>
 
   <key>CFBundleURLTypes</key>
   <array>
@@ -40,10 +40,10 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>io.nscoin.NSCPayment</string>
+      <string>io.projectcoin.PrjPayment</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>nscoin</string>
+        <string>projectcoin</string>
       </array>
     </dict>
   </array>
@@ -52,9 +52,9 @@
   <array>
     <dict>
       <key>UTTypeIdentifier</key>
-      <string>io.nscoin.paymentrequest</string>
+      <string>io.projectcoin.paymentrequest</string>
       <key>UTTypeDescription</key>
-      <string>NsCoin payment request</string>
+      <string>ProjectCoin payment request</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>
@@ -62,10 +62,10 @@
       <key>UTTypeTagSpecification</key>
       <dict>
         <key>public.mime-type</key>
-        <string>application/x-nscoin-payment-request</string>
+        <string>application/x-projectcoin-payment-request</string>
         <key>public.filename-extension</key>
         <array>
-          <string>nscoinpaymentrequest</string>
+          <string>projectcoinpaymentrequest</string>
         </array>
       </dict>
     </dict>
@@ -78,7 +78,7 @@
       <string>Editor</string>
       <key>LSItemContentTypes</key>
       <array>
-        <string>io.nscoin.paymentrequest</string>
+        <string>io.projectcoin.paymentrequest</string>
       </array>
       <key>LSHandlerRank</key>
       <string>Owner</string>
