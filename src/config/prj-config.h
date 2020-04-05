@@ -1,9 +1,9 @@
-/* src/config/projectcoin-config.h.  Generated from projectcoin-config.h.in by configure.  */
-/* src/config/projectcoin-config.h.in.  Generated from configure.ac by autoheader.  */
+/* src/config/nscoin-config.h.  Generated from nscoin-config.h.in by configure.  */
+/* src/config/nscoin-config.h.in.  Generated from configure.ac by autoheader.  */
 
-#ifndef ProjectCoin_CONFIG_H
+#ifndef Nscoin_CONFIG_H
 
-#define ProjectCoin_CONFIG_H
+#define Nscoin_CONFIG_H
 
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
@@ -268,16 +268,16 @@
 #define LT_OBJDIR ".libs/"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "www.projectcoin.net"
+#define PACKAGE_BUGREPORT "www.nscoin.us"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "ProjectCoin Core"
+#define PACKAGE_NAME "Nscoin Core"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "ProjectCoin Core 1.0.2"
+#define PACKAGE_STRING "Nscoin Core 1.0.2"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "projectcoin"
+#define PACKAGE_TARNAME "nscoin"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
@@ -340,4 +340,4 @@
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */
 
-#endif //ProjectCoin_CONFIG_H
+#endif //Nscoin_CONFIG_H

@@ -17,11 +17,11 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
 {
     CAmount nSum = 0;
     for (int nHeight = 0; nHeight < 1; nHeight += 1) {
-        /* premine in block 1 (3,000,000 ProjectCoin) */
+        /* premine in block 1 (3,000,000 Nscoin) */
         CAmount nSubsidy = GetBlockValue(nHeight);
         BOOST_CHECK(nSubsidy <= 3000000 * COIN);
         nSum += nSubsidy;
-    CAmount nSubsidy = 1 * COIN; //Block value = 1 ProjectCoin
+    CAmount nSubsidy = 1 * COIN; //Block value = 1 Nscoin
     }
 
     for (int nHeight = 151200; nHeight < 259200; nHeight += 1) {

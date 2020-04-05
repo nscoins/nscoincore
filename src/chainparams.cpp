@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The ProjectCoin Core developers
+// Copyright (c) 2018-2019 The Nscoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -55,15 +55,15 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
     (0, uint256("0"))
-
+   
                               ;
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
     1549824796, // * UNIX timestamp of last checkpoint block
-    565587,          // * total number of transactions between genesis and last checkpoint
+    0,          // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
-    2000        // * estimated number of transactions per day after checkpoint
+    8000        // * estimated number of transactions per day after checkpoint
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
@@ -95,9 +95,9 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 4-byte int at any alignment.
          */
-        pchMessageStart[0] = 0xa7;
+        pchMessageStart[0] = 0xa8;
         pchMessageStart[1] = 0xfe;
-        pchMessageStart[2] = 0xc3;
+        pchMessageStart[2] = 0xc6;
         pchMessageStart[3] = 0x63;
         vAlertPubKey = ParseHex("0214a345c9add950bc2a23c569c40f029eb8d0385c86cfcc830a872737a98e6a5f");
 
@@ -110,7 +110,7 @@ public:
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
-        nTargetSpacing = 1 * 30;  // ProjectCoin: 0.5 minute after 750K
+        nTargetSpacing = 1 * 30;  // Nscoin: 0.5 minute after 750K
         nTargetSpacingSlowLaunch = 1 * 60; // before block 750k
         // nAntiInstamineTime = 50; // 720 blocks with 1 reward for instamine prevention
         nMaturity = 228;
@@ -120,7 +120,7 @@ public:
         nStartMasternodePaymentsBlock = 200;
 
         /** Height or Time Based Activations **/
-        nLastPOWBlock = 2000;
+        nLastPOWBlock = 8000;
         nModifierUpdateBlock = std::numeric_limits<decltype(nModifierUpdateBlock)>::max();
 
         /**
@@ -133,32 +133,57 @@ public:
          *     CTxOut(nValue=50.00000000, scriptPubKey=0xA9037BAC7050C479B121CF)
          *   vMerkleTree: e0028e
          */
-        const char* pszTimestamp = " Don't work for weekends, work for our goals.";
+        const char* pszTimestamp = "the new yoek times - New Russian Hacking Targeted Republican Groups, Microsoft Says";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CScriptNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 50 * COIN;
+        txNew.vout[0].nValue = 5 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("044a001040da79684a0544c2254eb6c896fae95a9ea7b51d889475eb57ab2051f1a5858cac61ae400e90ea08015263ad40c65d36f0edf19e996972e7d2cbd13c15") << OP_CHECKSIG;
         genesis.vtx.push_back(txNew);
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1583046461;
+        genesis.nTime = 1534859399;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 2962109;
+        genesis.nNonce = 0;
 
-        hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("00000a514caa89f41a028793f13bde841595cb17ae929e66d27ec9783b4da3f2"));
-        assert(genesis.hashMerkleRoot == uint256("032615e5105727d5db57e843524a5179d96d2cd90c14e5769d660d5391ae0e9d"));
+ hashGenesisBlock = genesis.GetHash();
+        if(genesis.GetHash() != uint256("0x"))
+        {
+        printf("MSearching for genesis block...\n");
+        uint256 hashTarget;
+        hashTarget.SetCompact(genesis.nBits);
+        while(uint256(genesis.GetHash()) > uint256(hashTarget))
+        {
+            ++genesis.nNonce;
+            if (genesis.nNonce == 0)
+            {
+                printf("Mainnet NONCE WRAPPED, incrementing time");
+                std::cout << std::string("Mainnet NONCE WRAPPED, incrementing time:\n");
+                ++genesis.nTime;
+            }
+            if (genesis.nNonce % 10000 == 0)
+            {
+               printf("Mainnet: nonce %08u: hash = %s \n", genesis.nNonce, genesis.GetHash().ToString().c_str());
+            }
+        }
+        printf("Mainnet block.nTime = %u \n", genesis.nTime);
+        printf("Mainnet block.nNonce = %u \n", genesis.nNonce);
+        printf("Mainnet block.hashMerkleRoot: %s\n", genesis.hashMerkleRoot.ToString().c_str());
+        printf("Mainnet block.GetHash = %s\n", genesis.GetHash().ToString().c_str());
+        }
 
-        vSeeds.push_back(CDNSSeedData("seed1.projectcoin.net", "seed1.projectcoin.net"));     // Primary DNS Seeder
-        vSeeds.push_back(CDNSSeedData("seed2.projectcoin.net", "seed2.projectcoin.net"));     // Primary DNS Seeder
-        vSeeds.push_back(CDNSSeedData("seed3.projectcoin.net", "seed3.projectcoin.net"));     // Primary DNS Seeder
-        vSeeds.push_back(CDNSSeedData("seeder.projectcoin.net", "seeder.projectcoin.net"));     // seeder.projectcoin.net
+        vFixedSeeds.clear();
+        vSeeds.clear();
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 55); // P
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 8);
+        vSeeds.push_back(CDNSSeedData("seed1.nscoin.us", "seed1.nscoin.us"));     // Primary DNS Seeder
+        vSeeds.push_back(CDNSSeedData("seed2.nscoin.us", "seed2.nscoin.us"));     // Primary DNS Seeder
+        vSeeds.push_back(CDNSSeedData("seed3.nscoin.us", "seed3.nscoin.us"));     // Primary DNS Seeder
+        vSeeds.push_back(CDNSSeedData("seeder.nscoin.us", "seeder.nscoin.us"));     // seeder.nscoin.us
+
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 53); // P
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 54);
         base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 117); // p
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x02)(0x2D)(0x25)(0x33).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x02)(0x21)(0x31)(0x2B).convert_to_container<std::vector<unsigned char> >();
@@ -178,7 +203,7 @@ public:
 
         nPoolMaxTransactions = 3;
         strSporkKey = "0228344aa5b39cc8fed8a8adcf8fe5616584e6b49b2008f47a166f509a51e7ead9";
-        strObfuscationPoolDummyAddress = "PSDj2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
+        strObfuscationPoolDummyAddress = "NSDj2gC9j6nNrnzCsg4aY6bHMLsT9nUhEw";
         nStartMasternodePayments = 1534859399; //Wed, 25 Jun 2014 20:36:16 GMT
 
     }
@@ -214,7 +239,7 @@ public:
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
-        nTargetSpacing = 1 * 60;  // ProjectCoin: 1 minute
+        nTargetSpacing = 1 * 60;  // Nscoin: 1 minute
         nLastPOWBlock = std::numeric_limits<decltype(nLastPOWBlock)>::max();
         nMaturity = 15;
         nMasternodeCountDrift = 4;
@@ -232,16 +257,16 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        //vSeeds.push_back(CDNSSeedData("projectcoin.net", "seed01.projectcoin.net"));     // Primary DNS Seeder
+        //vSeeds.push_back(CDNSSeedData("nscoin.us", "seed01.nscoin.us"));     // Primary DNS Seeder
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 137); // Testnet ProjectCoin addresses start with 'x'
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet ProjectCoin script addresses start with '8' or '9'
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 137); // Testnet Nscoin addresses start with 'x'
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 19);  // Testnet Nscoin script addresses start with '8' or '9'
         base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 239);     // Testnet private keys start with '9' or 'c' (Bitcoin defaults)
-        // Testnet ProjectCoin BIP32 pubkeys start with 'DRKV'
+        // Testnet Nscoin BIP32 pubkeys start with 'DRKV'
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x3a)(0x80)(0x61)(0xa0).convert_to_container<std::vector<unsigned char> >();
-        // Testnet ProjectCoin BIP32 prvkeys start with 'DRKP'
+        // Testnet Nscoin BIP32 prvkeys start with 'DRKP'
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x3a)(0x80)(0x58)(0x37).convert_to_container<std::vector<unsigned char> >();
-        // Testnet ProjectCoin BIP44 coin type is '1' (All coin's testnet default)
+        // Testnet Nscoin BIP44 coin type is '1' (All coin's testnet default)
         base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x00)(0x01).convert_to_container<std::vector<unsigned char> >();
 
         //convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
@@ -287,7 +312,7 @@ public:
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 1;
-        nTargetSpacing = 1 * 60;        // ProjectCoin: 1 minute
+        nTargetSpacing = 1 * 60;        // Nscoin: 1 minute
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         genesis.nTime = 1534859399;
         genesis.nBits = 0x207fffff;

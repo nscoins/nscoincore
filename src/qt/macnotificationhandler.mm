@@ -14,7 +14,7 @@
 - (NSString *)__bundleIdentifier
 {
     if (self == [NSBundle mainBundle]) {
-        return @"io.projectcoin.ProjectCoinCore-Qt";
+        return @"io.nscoin.NscoinCore-Qt";
     } else {
         return [self __bundleIdentifier];
     }

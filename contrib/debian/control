@@ -1,4 +1,4 @@
-Source: projectcoin
+Source: nscoin
 Section: utils
 Priority: optional
 Build-Depends: debhelper,
@@ -20,15 +20,15 @@ Build-Depends: debhelper,
  libqrencode-dev,
  libprotobuf-dev, protobuf-compiler
 Standards-Version: 1.0
-Homepage: http://www.projectcoin.net
-Vcs-Git: git://github.com/ProjectCoin-Core/ProjectCoin.git
-Vcs-Browser: http://github.com/ProjectCoin-Core/ProjectCoin
+Homepage: http://www.nscoin.us
+Vcs-Git: git://github.com/Nscoin-Core/Nscoin.git
+Vcs-Browser: http://github.com/Nscoin-Core/Nscoin
 
-Package: projectcoind
+Package: nscoind
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - daemon
- ProjectCoin is a free open source peer-to-peer electronic cash system that
+ Nscoin is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
@@ -37,14 +37,14 @@ Description: peer-to-peer network based digital currency - daemon
  Full transaction history is stored locally at each client.  This
  requires 1+ GB of space, slowly growing.
  .
- This package provides the daemon, projectcoind, and the CLI tool
- projectcoin-cli to interact with the daemon.
+ This package provides the daemon, nscoind, and the CLI tool
+ nscoin-cli to interact with the daemon.
 
-Package: projectcoin-qt
+Package: nscoin-qt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - Qt GUI
- ProjectCoin is a free open source peer-to-peer electronic cash system that
+ Nscoin is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
@@ -53,4 +53,4 @@ Description: peer-to-peer network based digital currency - Qt GUI
  Full transaction history is stored locally at each client.  This
  requires 1+ GB of space, slowly growing.
  .
- This package provides ProjectCoin-Qt, a GUI for ProjectCoin based on Qt.
+ This package provides Nscoin-Qt, a GUI for Nscoin based on Qt.

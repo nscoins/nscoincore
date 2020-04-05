@@ -1,4 +1,4 @@
-/**************************************ProjectCoin**********************************************/
+/**************************************Nscoin**********************************************/
 /****************************************************************************************/
                     /*************** GLOBAL STYLE*****************/
                     /*
@@ -706,7 +706,7 @@
 
 
 
-         QWidget .QPushButton#blabel_ProjectCoin {
+         QWidget .QPushButton#blabel_Nscoin {
             background-color: transparent;
             border:0;
             border-radius:0px;
@@ -741,7 +741,7 @@
      }
 
 
-     QWidget .QFrame#frame_blue .QLabel#label_ProjectCoin2 { /*ProjectCoin */
+     QWidget .QFrame#frame_blue .QLabel#label_Nscoin2 { /*Nscoin */
         background-color:transparent;
         color:rgb(255, 255, 255);
         font-size:15px;
@@ -759,7 +759,7 @@
         font-size:30px;
      }
 
-     QWidget .QFrame#frame_blue .QLabel#label_ProjectCoin3 { /*ProjectCoin */
+     QWidget .QFrame#frame_blue .QLabel#label_Nscoin3 { /*Nscoin */
         background-color:transparent;
         color:rgb(255, 255, 255);
         font-size:15px;
@@ -779,7 +779,7 @@
      }
 
 
-     QWidget .QFrame#frame_blue .QLabel#label_ProjectCoin4 { /*ProjectCoin */
+     QWidget .QFrame#frame_blue .QLabel#label_Nscoin4 { /*Nscoin */
         background-color:transparent;
         color:rgb(255, 255, 255);
         font-size:15px;
@@ -790,7 +790,7 @@
 
     QWidget .QFrame#frame_blue_3 { /* logo */
 
-        background-image: url(':/images/projectcoin_logo_horizontal');
+        background-image: url(':/images/nscoin_logo_horizontal');
         background-repeat:none;
         border-style: none;
 
@@ -2158,7 +2158,7 @@
     border:0;
     }
 
-    /* About ProjectCoin Dialog */
+    /* About Nscoin Dialog */
     QDialog#AboutDialog QLabel#label, QDialog#AboutDialog QLabel#copyrightLabel, QDialog#AboutDialog QLabel#label_2 { /* About Bulwark Contents */
     margin-left:10px;
     }

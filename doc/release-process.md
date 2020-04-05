@@ -3,7 +3,7 @@ Release Process
 
 Before every release candidate:
 
-* Update translations (ping Fuzzbawls on Slack) see [translation_process.md](https://github.com/ProjectCoin-Core/ProjectCoin/blob/master/doc/translation_process.md#synchronising-translations).
+* Update translations (ping Fuzzbawls on Slack) see [translation_process.md](https://github.com/Nscoin-Core/Nscoin/blob/master/doc/translation_process.md#synchronising-translations).
 
 Before every minor and major release:
 
@@ -24,12 +24,12 @@ If you're using the automated script (found in [contrib/gitian-build.sh](/contri
 Check out the source code in the following directory hierarchy.
 
     cd /path/to/your/toplevel/build
-    git clone https://github.com/projectcoin-project/gitian.sigs.git
-    git clone https://github.com/projectcoin-project/projectcoin-detached-sigs.git
+    git clone https://github.com/nscoin-project/gitian.sigs.git
+    git clone https://github.com/nscoin-project/nscoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
-    git clone https://github.com/projectcoin-project/projectcoin.git
+    git clone https://github.com/nscoin-project/nscoin.git
 
-### ProjectCoin maintainers/release engineers, suggestion for writing release notes
+### Nscoin maintainers/release engineers, suggestion for writing release notes
 
 Write release notes. git shortlog helps a lot, for example:
 
@@ -50,7 +50,7 @@ If you're using the automated script (found in [contrib/gitian-build.sh](/contri
 
 Setup Gitian descriptors:
 
-    pushd ./projectcoin
+    pushd ./nscoin
     export SIGNER=(your Gitian key, ie bluematt, sipa, etc)
     export VERSION=(new version, e.g. 0.8.0)
     git fetch
@@ -84,7 +84,7 @@ Create the OS X SDK tarball, see the [OS X readme](README_osx.md) for details, a
 By default, Gitian will fetch source files as needed. To cache them ahead of time:
 
     pushd ./gitian-builder
-    make -C ../projectcoin/depends download SOURCES_PATH=`pwd`/cache/common
+    make -C ../nscoin/depends download SOURCES_PATH=`pwd`/cache/common
     popd
 
 Only missing files will be fetched, so this is safe to re-run for each build.
@@ -92,55 +92,55 @@ Only missing files will be fetched, so this is safe to re-run for each build.
 NOTE: Offline builds must use the --url flag to ensure Gitian fetches only from local URLs. For example:
 
     pushd ./gitian-builder
-    ./bin/gbuild --url projectcoin=/path/to/projectcoin,signature=/path/to/sigs {rest of arguments}
+    ./bin/gbuild --url nscoin=/path/to/nscoin,signature=/path/to/sigs {rest of arguments}
     popd
 
 The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
-### Build and sign ProjectCoin Core for Linux, Windows, and OS X:
+### Build and sign Nscoin Core for Linux, Windows, and OS X:
 
     pushd ./gitian-builder
-    ./bin/gbuild --memory 3000 --commit projectcoin=v${VERSION} ../projectcoin/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../projectcoin/contrib/gitian-descriptors/gitian-linux.yml
-    mv build/out/projectcoin-*.tar.gz build/out/src/projectcoin-*.tar.gz ../
+    ./bin/gbuild --memory 3000 --commit nscoin=v${VERSION} ../nscoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../nscoin/contrib/gitian-descriptors/gitian-linux.yml
+    mv build/out/nscoin-*.tar.gz build/out/src/nscoin-*.tar.gz ../
 
-    ./bin/gbuild --memory 3000 --commit projectcoin=v${VERSION} ../projectcoin/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../projectcoin/contrib/gitian-descriptors/gitian-win.yml
-    mv build/out/projectcoin-*-win-unsigned.tar.gz inputs/projectcoin-win-unsigned.tar.gz
-    mv build/out/projectcoin-*.zip build/out/projectcoin-*.exe ../
+    ./bin/gbuild --memory 3000 --commit nscoin=v${VERSION} ../nscoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../nscoin/contrib/gitian-descriptors/gitian-win.yml
+    mv build/out/nscoin-*-win-unsigned.tar.gz inputs/nscoin-win-unsigned.tar.gz
+    mv build/out/nscoin-*.zip build/out/nscoin-*.exe ../
 
-    ./bin/gbuild --memory 3000 --commit projectcoin=v${VERSION} ../projectcoin/contrib/gitian-descriptors/gitian-osx.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../projectcoin/contrib/gitian-descriptors/gitian-osx.yml
-    mv build/out/projectcoin-*-osx-unsigned.tar.gz inputs/projectcoin-osx-unsigned.tar.gz
-    mv build/out/projectcoin-*.tar.gz build/out/projectcoin-*.dmg ../
+    ./bin/gbuild --memory 3000 --commit nscoin=v${VERSION} ../nscoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../nscoin/contrib/gitian-descriptors/gitian-osx.yml
+    mv build/out/nscoin-*-osx-unsigned.tar.gz inputs/nscoin-osx-unsigned.tar.gz
+    mv build/out/nscoin-*.tar.gz build/out/nscoin-*.dmg ../
 
-    ./bin/gbuild --memory 3000 --commit projectcoin=v${VERSION} ../projectcoin/contrib/gitian-descriptors/gitian-aarch64.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../projectcoin/contrib/gitian-descriptors/gitian-aarch64.yml
-    mv build/out/projectcoin-*.tar.gz build/out/src/projectcoin-*.tar.gz ../
+    ./bin/gbuild --memory 3000 --commit nscoin=v${VERSION} ../nscoin/contrib/gitian-descriptors/gitian-aarch64.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../nscoin/contrib/gitian-descriptors/gitian-aarch64.yml
+    mv build/out/nscoin-*.tar.gz build/out/src/nscoin-*.tar.gz ../
     popd
 
 Build output expected:
 
-  1. source tarball (`projectcoin-${VERSION}.tar.gz`)
-  2. linux 32-bit and 64-bit dist tarballs (`projectcoin-${VERSION}-linux[32|64].tar.gz`)
-  3. windows 32-bit and 64-bit unsigned installers and dist zips (`projectcoin-${VERSION}-win[32|64]-setup-unsigned.exe`, `projectcoin-${VERSION}-win[32|64].zip`)
-  4. OS X unsigned installer and dist tarball (`projectcoin-${VERSION}-osx-unsigned.dmg`, `projectcoin-${VERSION}-osx64.tar.gz`)
+  1. source tarball (`nscoin-${VERSION}.tar.gz`)
+  2. linux 32-bit and 64-bit dist tarballs (`nscoin-${VERSION}-linux[32|64].tar.gz`)
+  3. windows 32-bit and 64-bit unsigned installers and dist zips (`nscoin-${VERSION}-win[32|64]-setup-unsigned.exe`, `nscoin-${VERSION}-win[32|64].zip`)
+  4. OS X unsigned installer and dist tarball (`nscoin-${VERSION}-osx-unsigned.dmg`, `nscoin-${VERSION}-osx64.tar.gz`)
   5. Gitian signatures (in `gitian.sigs/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
 
 ### Verify other gitian builders signatures to your own. (Optional)
 
 Add other gitian builders keys to your gpg keyring, and/or refresh keys.
 
-    gpg --import projectcoin/contrib/gitian-keys/*.pgp
+    gpg --import nscoin/contrib/gitian-keys/*.pgp
     gpg --refresh-keys
 
 Verify the signatures
 
     pushd ./gitian-builder
-    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../projectcoin/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../projectcoin/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../projectcoin/contrib/gitian-descriptors/gitian-osx.yml
-    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-aarch64 ../projectcoin/contrib/gitian-descriptors/gitian-aarch64.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../nscoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../nscoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../nscoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-aarch64 ../nscoin/contrib/gitian-descriptors/gitian-aarch64.yml
     popd
 
 ### Next steps:
@@ -162,22 +162,22 @@ Codesigner only: Create Windows/OS X detached signatures:
 
 Codesigner only: Sign the osx binary:
 
-    transfer projectcoin-osx-unsigned.tar.gz to osx for signing
-    tar xf projectcoin-osx-unsigned.tar.gz
+    transfer nscoin-osx-unsigned.tar.gz to osx for signing
+    tar xf nscoin-osx-unsigned.tar.gz
     ./detached-sig-create.sh -s "Key ID"
     Enter the keychain password and authorize the signature
     Move signature-osx.tar.gz back to the gitian host
 
 Codesigner only: Sign the windows binaries:
 
-    tar xf projectcoin-win-unsigned.tar.gz
+    tar xf nscoin-win-unsigned.tar.gz
     ./detached-sig-create.sh -key /path/to/codesign.key
     Enter the passphrase for the key when prompted
     signature-win.tar.gz will be created
 
 Codesigner only: Commit the detached codesign payloads:
 
-    cd ~/projectcoin-detached-sigs
+    cd ~/nscoin-detached-sigs
     checkout the appropriate branch for this release series
     rm -rf *
     tar xf signature-osx.tar.gz
@@ -190,25 +190,25 @@ Codesigner only: Commit the detached codesign payloads:
 Non-codesigners: wait for Windows/OS X detached signatures:
 
 - Once the Windows/OS X builds each have 3 matching signatures, they will be signed with their respective release keys.
-- Detached signatures will then be committed to the [projectcoin-detached-sigs](https://github.com/PIVX-Project/projectcoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
+- Detached signatures will then be committed to the [nscoin-detached-sigs](https://github.com/PIVX-Project/nscoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
 
 Create (and optionally verify) the signed OS X binary:
 
     pushd ./gitian-builder
-    ./bin/gbuild -i --commit signature=v${VERSION} ../projectcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs/ ../projectcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../projectcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    mv build/out/projectcoin-osx-signed.dmg ../projectcoin-${VERSION}-osx.dmg
+    ./bin/gbuild -i --commit signature=v${VERSION} ../nscoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs/ ../nscoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../nscoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    mv build/out/nscoin-osx-signed.dmg ../nscoin-${VERSION}-osx.dmg
     popd
 
 Create (and optionally verify) the signed Windows binaries:
 
     pushd ./gitian-builder
-    ./bin/gbuild -i --commit signature=v${VERSION} ../projectcoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs/ ../projectcoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-signed ../projectcoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    mv build/out/projectcoin-*win64-setup.exe ../projectcoin-${VERSION}-win64-setup.exe
-    mv build/out/projectcoin-*win32-setup.exe ../projectcoin-${VERSION}-win32-setup.exe
+    ./bin/gbuild -i --commit signature=v${VERSION} ../nscoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs/ ../nscoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    ./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-signed ../nscoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    mv build/out/nscoin-*win64-setup.exe ../nscoin-${VERSION}-win64-setup.exe
+    mv build/out/nscoin-*win32-setup.exe ../nscoin-${VERSION}-win32-setup.exe
     popd
 
 Commit your signature for the signed OS X/Windows binaries:
@@ -230,23 +230,23 @@ sha256sum * > SHA256SUMS
 
 The list of files should be:
 ```
-projectcoin-${VERSION}-aarch64-linux-gnu.tar.gz
-projectcoin-${VERSION}-arm-linux-gnueabihf.tar.gz
-projectcoin-${VERSION}-i686-pc-linux-gnu.tar.gz
-projectcoin-${VERSION}-x86_64-linux-gnu.tar.gz
-projectcoin-${VERSION}-osx64.tar.gz
-projectcoin-${VERSION}-osx.dmg
-projectcoin-${VERSION}.tar.gz
-projectcoin-${VERSION}-win32-setup.exe
-projectcoin-${VERSION}-win32.zip
-projectcoin-${VERSION}-win64-setup.exe
-projectcoin-${VERSION}-win64.zip
+nscoin-${VERSION}-aarch64-linux-gnu.tar.gz
+nscoin-${VERSION}-arm-linux-gnueabihf.tar.gz
+nscoin-${VERSION}-i686-pc-linux-gnu.tar.gz
+nscoin-${VERSION}-x86_64-linux-gnu.tar.gz
+nscoin-${VERSION}-osx64.tar.gz
+nscoin-${VERSION}-osx.dmg
+nscoin-${VERSION}.tar.gz
+nscoin-${VERSION}-win32-setup.exe
+nscoin-${VERSION}-win32.zip
+nscoin-${VERSION}-win64-setup.exe
+nscoin-${VERSION}-win64.zip
 ```
 The `*-debug*` files generated by the gitian build contain debug symbols
 for troubleshooting by developers. It is assumed that anyone that is interested
 in debugging can run gitian to generate the files for themselves. To avoid
 end-user confusion about which file to pick, as well as save storage
-space *do not upload these to the projectcoin.net server*.
+space *do not upload these to the nscoin.us server*.
 
 - GPG-sign it, delete the unsigned file:
 ```
@@ -262,10 +262,10 @@ Note: check that SHA256SUMS itself doesn't end up in SHA256SUMS, which is a spur
 
   - bitcointalk announcement thread
 
-  - Optionally twitter, reddit /r/projectcoin, ... but this will usually sort out itself
+  - Optionally twitter, reddit /r/nscoin, ... but this will usually sort out itself
 
   - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-  - Create a [new GitHub release](https://github.com/ProjectCoin-Core/ProjectCoin/releases/new) with a link to the archived release notes.
+  - Create a [new GitHub release](https://github.com/Nscoin-Core/Nscoin/releases/new) with a link to the archived release notes.
 
   - Celebrate

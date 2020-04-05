@@ -1,39 +1,39 @@
-ProjectCoin
+Nscoin
 =====================
 
 Setup
 ---------------------
-[ProjectCoin](http://projectcoin.net/wallet) is the original ProjectCoin client and it builds the backbone of the network. However, it downloads and stores the entire history of ProjectCoin transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[Nscoin](http://nscoin.us/wallet) is the original Nscoin client and it builds the backbone of the network. However, it downloads and stores the entire history of Nscoin transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
-The following are some helpful notes on how to run ProjectCoin on your native platform.
+The following are some helpful notes on how to run Nscoin on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- bin/32/projectcoin-qt (GUI, 32-bit) or bin/32/projectcoind (headless, 32-bit)
-- bin/64/projectcoin-qt (GUI, 64-bit) or bin/64/projectcoind (headless, 64-bit)
+- bin/32/nscoin-qt (GUI, 32-bit) or bin/32/nscoind (headless, 32-bit)
+- bin/64/nscoin-qt (GUI, 64-bit) or bin/64/nscoind (headless, 64-bit)
 
 ### Windows
 
-Unpack the files into a directory, and then run projectcoin-qt.exe.
+Unpack the files into a directory, and then run nscoin-qt.exe.
 
 ### OSX
 
-Drag ProjectCoin-Qt to your applications folder, and then run ProjectCoin-Qt.
+Drag Nscoin-Qt to your applications folder, and then run Nscoin-Qt.
 
 ### Need Help?
 
-* See the documentation at the [ProjectCoin Wiki](https://en.projectcoin.net/wiki/Main_Page) ***TODO***
+* See the documentation at the [Nscoin Wiki](https://en.nscoin.us/wiki/Main_Page) ***TODO***
 for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org) or on the [ProjectCoin Forum](http://forum.projectcoin.net/).
+* Ask for help on [BitcoinTalk](https://bitcointalk.org) or on the [Nscoin Forum](http://forum.nscoin.us/).
 * Join our Discord server [Discord Server](https://discord.gg/S9adMgS)
 
 Building
 ---------------------
-The following are developer notes on how to build ProjectCoin on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build Nscoin on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [OSX Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
@@ -42,7 +42,7 @@ The following are developer notes on how to build ProjectCoin on your native pla
 
 Development
 ---------------------
-The ProjectCoin repo's [root README](https://github.com/ProjectCoin-Core/ProjectCoin/blob/master/README.md) contains relevant information on the development process and automated testing.
+The Nscoin repo's [root README](https://github.com/Nscoin-Core/Nscoin/blob/master/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
@@ -56,7 +56,7 @@ The ProjectCoin repo's [root README](https://github.com/ProjectCoin-Core/Project
 
 ### Resources
 
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [ProjectCoin](http://forum.projectcoin.net/) forum.
+* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [Nscoin](http://forum.nscoin.us/) forum.
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

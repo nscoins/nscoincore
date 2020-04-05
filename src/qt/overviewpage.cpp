@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The ProjectCoin Core developers
+// Copyright (c) 2018-2019 The Nscoin Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -45,7 +45,7 @@ class TxViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 public:
-    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::PRJ)
+    TxViewDelegate() : QAbstractItemDelegate(), unit(BitcoinUnits::NSC)
     {
     }
 
@@ -192,7 +192,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     currentWatchUnconfBalance = watchUnconfBalance;
     currentWatchImmatureBalance = watchImmatureBalance;
 
-    // ProjectCoin labels
+    // Nscoin labels
 
     if(balance != 0)
         ui->labelBalance->setText(BitcoinUnits::floorHtmlWithoutUnit(nDisplayUnit, currentBalance, false, BitcoinUnits::separatorNever));
@@ -211,7 +211,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     // for symmetry reasons also show immature label when the watch-only one is shown
     ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
     ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
-    ui->label_ProjectCoin4->setVisible(showImmature || showWatchOnlyImmature);
+    ui->label_Nscoin4->setVisible(showImmature || showWatchOnlyImmature);
 
    // ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
 
@@ -278,11 +278,11 @@ void OverviewPage::setWalletModel(WalletModel* model)
         // connect(ui->obfuscationReset, SIGNAL(clicked()), this, SLOT(obfuscationReset()));
         // connect(ui->toggleObfuscation, SIGNAL(clicked()), this, SLOT(toggleObfuscation()));
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
-        connect(ui->blabel_ProjectCoin, SIGNAL(clicked()), this, SLOT(openMyAddresses()));
+        connect(ui->blabel_Nscoin, SIGNAL(clicked()), this, SLOT(openMyAddresses()));
 
     }
 
-    // update the display unit, to not use the default ("ProjectCoin")
+    // update the display unit, to not use the default ("Nscoin")
     updateDisplayUnit();
 }
 
@@ -403,8 +403,8 @@ void OverviewPage::updatBlockChainInfo()
 int CurrentBlock = (int)chainActive.Height();
 int64_t netHashRate = chainActive.GetNetworkHashPS(24, CurrentBlock-1);
 int64_t BlockReward = GetBlockValue(chainActive.Height());
-double BlockRewardProjectCoin =  static_cast<double>(BlockReward/COIN);
-//int64_t ProjectCoinSupply = chainActive.Tip()->nMoneySupply / COIN;
+double BlockRewardNscoin =  static_cast<double>(BlockReward/COIN);
+//int64_t NscoinSupply = chainActive.Tip()->nMoneySupply / COIN;
 
 ui->label_CurrentBlock_value->setText(QString::number(CurrentBlock));
 
@@ -443,8 +443,8 @@ else
 }
 
 
-ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewardProjectCoin));
-//ui->label_ProjectCoinSupply_value->setText(QString::number(ProjectCoinSupply));
+ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewardNscoin));
+//ui->label_NscoinSupply_value->setText(QString::number(NscoinSupply));
 
 
   }

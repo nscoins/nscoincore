@@ -11,13 +11,13 @@ reset-files.bash
 *.tar.gz
 multi-compile.sh
 *.exe
-src/projectcoin
-src/projectcoind
-src/projectcoin-cli
-src/projectcoin-tx
-src/test/test_projectcoin
-src/qt/test/test_projectcoin-qt
-src/bench/bench_projectcoin
+src/nscoin
+src/nscoind
+src/nscoin-cli
+src/nscoin-tx
+src/test/test_nscoin
+src/qt/test/test_nscoin-qt
+src/bench/bench_nscoin
 
 # autoreconf
 Makefile.in
@@ -43,8 +43,8 @@ confdefs.h
 conftest.cpp
 conftest.err
 libtool
-src/config/projectcoin-config.h
-src/config/projectcoin-config.h.in
+src/config/nscoin-config.h
+src/config/nscoin-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -69,7 +69,7 @@ libconftest.dylib*
 *.o
 *.o-*
 *.patch
-.projectcoin
+.nscoin
 *.a
 *.pb.cc
 *.pb.h
@@ -87,13 +87,13 @@ libconftest.dylib*
 
 # Compilation and Qt preprocessor part
 *.qm
-Makefile
-projectcoin-qt
-ProjectCoin-Qt.app
+
+nscoin-qt
+Nscoin-Qt.app
 
 # Unit-tests
 Makefile.test
-projectcoin-qt_test
+nscoin-qt_test
 src/test/buildenv.py
 
 # Resources cpp
@@ -107,7 +107,7 @@ build
 *.gcno
 *.gcda
 /*.info
-test_projectcoin.coverage/
+test_nscoin.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -131,14 +131,14 @@ share/BitcoindComparisonTool.jar
 /doc/doxygen/
 
 libbitcoinconsensus.pc
-libprojectcoinconsensus.pc
-src/qt/projectcoin-qt.bash
+libnscoinconsensus.pc
+src/qt/nscoin-qt.bash
 qa/pull-tester/tests-config.sh
 
 #development symlinks
-projectcoin-cli
-projectcoind
-projectcoin-qt
+nscoin-cli
+nscoind
+nscoin-qt
 make
 
 #development local files

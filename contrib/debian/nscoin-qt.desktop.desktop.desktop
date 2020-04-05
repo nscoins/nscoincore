@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Nscoin
+Comment=Nscoin P2P Cryptocurrency
+Exec=nscoin-qt %u
+Terminal=false
+Type=Application
+Icon=nscoin128
+MimeType=x-scheme-handler/nscoin;
+Categories=Office;Finance;
+Name[ru]=nscoin-qt.desktop.desktop

@@ -6,7 +6,7 @@
 #define BITCOIN_ZMQ_ZMQCONFIG_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/projectcoin-config.h"
+#include "config/nscoin-config.h"
 #endif
 
 #include <stdarg.h>

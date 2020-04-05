@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018-2019 The ProjectCoin Core developers
+// Copyright (c) 2018-2019 The Nscoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -41,7 +41,7 @@ using namespace boost;
 using namespace std;
 
 #if defined(NDEBUG)
-#error "ProjectCoin cannot be compiled without assertions."
+#error "Nscoin cannot be compiled without assertions."
 #endif
 
 /**
@@ -78,7 +78,7 @@ bool fAlerts = DEFAULT_ALERTS;
 unsigned int nStakeMinAge = 4 * 60 * 60;
 int64_t nReserveBalance = 0;
 
-/** Fees smaller than this (in uprojectcoin) are considered zero fee (for relaying and mining)
+/** Fees smaller than this (in unscoin) are considered zero fee (for relaying and mining)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minRelayTxFee only 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  */
@@ -1707,16 +1707,18 @@ CAmount GetBlockValue(int nHeight)
 
     if ( nHeight == 0 ) {    // premine
       nSubsidy = 500000 * COIN;
-    } else if (nHeight <= 2000) {
-      nSubsidy = 0.1 * COIN;
-    } else if (nHeight > 2000 && nHeight <= 30000) {
-      nSubsidy = 10 * COIN;
-    } else if (nHeight > 30000 && nHeight <= 60000) {
-      nSubsidy = 15 * COIN;
-    } else if (nHeight > 60000 && nHeight <= 100000) {
-      nSubsidy = 30 * COIN;
-    } else if (nHeight > 100000 && nHeight <= 180000) {
+    } else if (nHeight > 2000 && nHeight <= 5000) {
       nSubsidy = 50 * COIN;
+    } else if (nHeight <= 8000) {
+      nSubsidy = 0.1 * COIN;
+    } else if (nHeight > 8000 && nHeight <= 30000) {
+      nSubsidy = 5 * COIN;
+    } else if (nHeight > 30000 && nHeight <= 60000) {
+      nSubsidy = 10 * COIN;
+    } else if (nHeight > 60000 && nHeight <= 100000) {
+      nSubsidy = 20 * COIN;
+    } else if (nHeight > 100000 && nHeight <= 180000) {
+      nSubsidy = 30 * COIN;
     } else if (nHeight > 180000 && nHeight <= 250000) {
       nSubsidy = 25 * COIN;
     } else if (nHeight > 250000 && nHeight <= 500000) { // soft fork
@@ -1728,7 +1730,7 @@ CAmount GetBlockValue(int nHeight)
     } else if (nHeight > 1250000 && nHeight <= 3000000) {
       nSubsidy = 1 * COIN;
     } else {
-      nSubsidy = 0.1 * COIN;
+      nSubsidy = 0.01 * COIN;
     }
 
     // Check if we reached the coin max supply.
@@ -2161,7 +2163,7 @@ static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck()
 {
-    RenameThread("projectcoin-scriptch");
+    RenameThread("nscoin-scriptch");
     scriptcheckqueue.Thread();
 }
 
@@ -3251,7 +3253,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 nHeight = (*mi).second->nHeight + 1;
         }
 
-        // ProjectCoin
+        // Nscoin
         // It is entierly possible that we don't have enough data and this could fail
         // (i.e. the block could indeed be valid). Store the block for later consideration
         // but issue an initial reject message.
